@@ -84,8 +84,10 @@ export async function POST(request: Request) {
       path: "/",
     })
     return response
-  } catch {
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error("Auth POST error:", msg)
+    return NextResponse.json({ success: false, error: msg || "Internal server error" }, { status: 500 })
   }
 }
 
