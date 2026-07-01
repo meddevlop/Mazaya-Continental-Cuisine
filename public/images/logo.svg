@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C8A45C"/>
+      <stop offset="50%" stop-color="#E8D5A3"/>
+      <stop offset="100%" stop-color="#C8A45C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Decorative top arc -->
+  <path d="M100 40 Q200 5 300 40" stroke="url(#goldGrad)" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <path d="M120 48 Q200 18 280 48" stroke="url(#goldGrad)" stroke-width="1" fill="none" opacity="0.3"/>
+
+  <!-- Crown / star symbol -->
+  <g transform="translate(200, 40)" fill="url(#goldGrad)">
+    <polygon points="0,-18 4,-6 16,-6 6,2 10,14 0,7 -10,14 -6,2 -16,-6 -4,-6" opacity="0.8"/>
+  </g>
+
+  <!-- Main brand name -->
+  <text x="200" y="105" text-anchor="middle" font-family="'Playfair Display', 'Times New Roman', serif" font-size="36" font-weight="700" fill="#F5F0EB" letter-spacing="4">
+    MAZAYA
+  </text>
+
+  <!-- Decorative line -->
+  <line x1="120" y1="120" x2="280" y2="120" stroke="url(#goldGrad)" stroke-width="1"/>
+  <circle cx="200" cy="120" r="2.5" fill="#C8A45C"/>
+
+  <!-- Subtitle -->
+  <text x="200" y="142" text-anchor="middle" font-family="'Inter', 'Helvetica', sans-serif" font-size="11" fill="#C8A45C" letter-spacing="6" font-weight="500">
+    CONTINENTAL CUISINE
+  </text>
+
+  <!-- Arabic subtitle -->
+  <text x="200" y="165" text-anchor="middle" font-family="'Noto Naskh Arabic', 'Traditional Arabic', serif" font-size="13" fill="#D4C9C0" letter-spacing="2" opacity="0.8">
+    مزايا كونتيننتال
+  </text>
+
+  <!-- Bottom decorative arc -->
+  <path d="M100 178 Q200 195 300 178" stroke="url(#goldGrad)" stroke-width="1" fill="none" opacity="0.3"/>
+  <path d="M120 175 Q200 188 280 175" stroke="url(#goldGrad)" stroke-width="1.5" fill="none" opacity="0.6"/>
+</svg>

@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --gold: #C8A45C;
+  --gold-dark: #B8933D;
+  --dark: #1A1A1A;
+  --dark-soft: #2C2420;
+  --light: #FAFAF8;
+  --cream: #F5F0EB;
+  --muted: #D4C9C0;
+  --text-muted: #6B5E56;
+  --border: #E8E0D8;
+}
+
+@theme inline {
+  --color-background: var(--light);
+  --color-foreground: var(--dark);
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-arabic: 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) transparent;
+}
+
+body {
+  background: var(--light);
+  color: var(--dark-soft);
+  font-family: 'Inter', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--dark);
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 64px;
+  }
+}
+
+.font-serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-arabic {
+  font-family: 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+}
