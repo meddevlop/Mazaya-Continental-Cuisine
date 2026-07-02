@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Phone } from "lucide-react"
+import { Menu, X, Phone, User, LogOut } from "lucide-react"
 import { business } from "@/data/business"
 
 const navLinks = [
@@ -14,11 +14,18 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ]
 
+function getInitial(user: { name?: string; email?: string } | null): string {
+  if (user?.name) return user.name.charAt(0).toUpperCase()
+  if (user?.email) return user.email.charAt(0).toUpperCase()
+  return "U"
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null)
   const [settings, setSettings] = useState({ name: business.name, phone: business.phone })
+  const [avatarOpen, setAvatarOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 60)
@@ -37,6 +44,12 @@ export default function Navbar() {
       if (data.authenticated && data.user) setUser(data.user)
     }).catch(() => {})
   }, [])
+
+  const handleLogout = async () => {
+    await fetch("/admin/api/auth", { method: "DELETE" })
+    setUser(null)
+    setAvatarOpen(false)
+  }
 
   return (
     <header
@@ -84,19 +97,63 @@ export default function Navbar() {
               className="hidden lg:flex items-center gap-3"
             >
               {user ? (
-                user.role === "admin" ? (
-                  <Link href="/admin/dashboard" className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors">
-                    <span className="text-[#C8A45C] text-xs font-bold">M</span>
-                  </Link>
-                ) : (
-                  <span className="w-7 h-7 rounded-full bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center text-[#C8A45C] text-xs font-bold">
-                    {user.name?.charAt(0)?.toUpperCase() || "U"}
-                  </span>
-                )
+                <div className="relative">
+                  <button
+                    onClick={() => setAvatarOpen(!avatarOpen)}
+                    className="w-9 h-9 rounded-full bg-[#C8A45C]/20 border border-[#C8A45C]/50 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-all duration-300 cursor-pointer"
+                  >
+                    <span className="text-[#C8A45C] text-sm font-bold">{getInitial(user)}</span>
+                  </button>
+                  <AnimatePresence>
+                    {avatarOpen && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setAvatarOpen(false)} />
+                        <motion.div
+                          initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 top-full mt-2 w-48 bg-[#111] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden"
+                        >
+                          <div className="p-1">
+                            <Link
+                              href={user.role === "admin" ? "/admin/dashboard" : "/"}
+                              onClick={() => setAvatarOpen(false)}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#D4C9C0] hover:bg-white/5 rounded-lg transition-colors"
+                            >
+                              <User size={14} /> Profile
+                            </Link>
+                            {user.role === "admin" && (
+                              <Link
+                                href="/admin/dashboard"
+                                onClick={() => setAvatarOpen(false)}
+                                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#D4C9C0] hover:bg-white/5 rounded-lg transition-colors"
+                              >
+                                <span className="w-3.5 h-3.5 rounded bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center text-[#C8A45C] text-[9px] font-bold">M</span> Dashboard
+                              </Link>
+                            )}
+                            <hr className="my-1 border-white/5" />
+                            <button
+                              onClick={handleLogout}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/5 rounded-lg transition-colors"
+                            >
+                              <LogOut size={14} /> Logout
+                            </button>
+                          </div>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
-                <Link href="/signup" className="text-[#D4C9C0] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
-                  Sign Up
-                </Link>
+                <>
+                  <Link href="/signup" className="text-[#D4C9C0] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
+                    Sign Up
+                  </Link>
+                  <Link href="/admin/login" className="text-[#6B5E56] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
+                    Login
+                  </Link>
+                </>
               )}
             </motion.div>
             <motion.div
@@ -144,31 +201,36 @@ export default function Navbar() {
                 </Link>
               ))}
               {user ? (
-                user.role === "admin" ? (
-                  <div className="flex items-center gap-4 mt-4 px-1">
-                    <Link
-                      href="/admin/dashboard"
-                      onClick={() => setIsOpen(false)}
-                      className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#C8A45C] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
-                    >
-                      Admin
-                    </Link>
+                <div className="flex items-center gap-3 mt-4 px-1">
+                  <div className="w-9 h-9 rounded-full bg-[#C8A45C]/20 border border-[#C8A45C]/50 flex items-center justify-center shrink-0">
+                    <span className="text-[#C8A45C] text-sm font-bold">{getInitial(user)}</span>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-4 mt-4 px-1">
-                    <span className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#D4C9C0] text-xs uppercase tracking-[0.2em]">
-                      {user.name || "User"}
-                    </span>
+                  <div className="flex-1">
+                    <p className="text-sm text-[#F5F0EB]">{user.name || "User"}</p>
+                    <p className="text-[10px] text-[#6B5E56]">{user.email}</p>
                   </div>
-                )
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 text-red-400 hover:bg-red-500/5 rounded-lg transition-colors"
+                  >
+                    <LogOut size={16} />
+                  </button>
+                </div>
               ) : (
-                <div className="flex items-center gap-4 mt-4 px-1">
+                <div className="flex items-center gap-3 mt-4 px-1">
                   <Link
                     href="/signup"
                     onClick={() => setIsOpen(false)}
                     className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#D4C9C0] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
                   >
                     Sign Up
+                  </Link>
+                  <Link
+                    href="/admin/login"
+                    onClick={() => setIsOpen(false)}
+                    className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#6B5E56] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
+                  >
+                    Login
                   </Link>
                 </div>
               )}

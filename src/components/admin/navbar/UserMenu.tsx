@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, LogOut } from "lucide-react"
+import { ChevronDown, LogOut, User, Settings } from "lucide-react"
 import { useAuthStore } from "@/store/authStore"
 import { useRouter } from "next/navigation"
 
@@ -46,6 +47,21 @@ export default function UserMenu() {
               className="absolute right-0 top-full mt-2 w-48 bg-[#111] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden"
             >
               <div className="p-1">
+                <Link
+                  href="/admin/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#D4C9C0] hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  <User size={14} /> My Profile
+                </Link>
+                <Link
+                  href="/admin/settings"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#D4C9C0] hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  <Settings size={14} /> Account Settings
+                </Link>
+                <hr className="my-1 border-white/5" />
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/5 rounded-lg transition-colors"
