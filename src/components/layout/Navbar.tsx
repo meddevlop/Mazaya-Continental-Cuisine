@@ -51,6 +51,12 @@ export default function Navbar() {
             {settings.name}
           </motion.span>
         </Link>
+        <Link
+          href="/admin/dashboard"
+          className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors ml-1"
+        >
+          <span className="text-[#C8A45C] text-xs font-bold">M</span>
+        </Link>
 
         <div className="hidden md:flex items-center gap-10">
           {navLinks.map((link, i) => (
