@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import { menuCategories as hardcodedCategories } from "@/data/menu"
 import MenuNavigation from "@/components/menu/MenuNavigation"
 import MenuCategory from "@/components/menu/MenuCategory"
@@ -57,7 +58,7 @@ export default function MenuPageClient() {
   if (loading) {
     return (
       <div className="bg-[#FAFAF8] min-h-screen">
-        <section className="relative pt-28 pb-12 md:pt-36 md:pb-16 bg-[#1A1A1A]" />
+        <section className="relative pt-28 pb-12 md:pt-36 md:pb-16 bg-[#111111]" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <LoadingSkeleton className="h-96" />
         </div>
@@ -66,27 +67,43 @@ export default function MenuPageClient() {
   }
 
   return (
-    <div className="bg-[#FAFAF8]">
-      <section className="relative pt-28 pb-12 md:pt-36 md:pb-16 bg-[#1A1A1A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-[#C8A45C] text-sm uppercase tracking-[0.3em] mb-2">{nameAr}</p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-[#F5F0EB]">
+    <div className="bg-[#FAFAF8] min-h-screen">
+      <section className="relative pt-28 pb-16 md:pt-36 md:pb-20 bg-[#111111] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1A1A] to-[#111111]" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C8A45C]/20 to-transparent" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.p
+            className="text-[#C8A45C] text-xs uppercase tracking-[0.35em] mb-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {nameAr}
+          </motion.p>
+          <motion.h1
+            className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-[#F5F0EB] mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
             Our Menu
-          </h1>
-          <p className="text-[#D4C9C0] mt-4 max-w-2xl mx-auto">
+          </motion.h1>
+          <motion.p
+            className="text-[#9B8B80] mt-4 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
             A curated selection of Continental and Middle Eastern dishes, crafted with the finest ingredients
-          </p>
+          </motion.p>
         </div>
       </section>
 
       <MenuNavigation categories={categories} />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <AnimatedSection>
-          {categories.map((category) => (
-            <MenuCategory key={category.id} category={category} />
-          ))}
-        </AnimatedSection>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {categories.map((category) => (
+          <MenuCategory key={category.id} category={category} />
+        ))}
       </div>
     </div>
   )

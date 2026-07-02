@@ -16,48 +16,86 @@ interface HeroProps {
 
 export default function Hero({ heroImage, logo, name, nameAr, tagline, rating }: HeroProps) {
   return (
-    <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+    <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
       {heroImage ? (
-        <img src={heroImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <>
+          <motion.img
+            src={heroImage}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.8, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/30" />
+        </>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#111111] via-[#1A1A1A] to-[#0D0D0D]" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10 pointer-events-none" />
 
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
         >
           {logo && (
-            <img
+            <motion.img
               src={logo}
               alt={name}
-              className="h-20 md:h-28 mx-auto mb-6"
+              className="h-24 md:h-32 mx-auto mb-8 drop-shadow-2xl"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
             />
           )}
 
-          <p className="text-[#C8A45C] text-sm md:text-base uppercase tracking-[0.3em] mb-4 font-medium">
+          <motion.p
+            className="text-[#C8A45C] text-xs md:text-sm uppercase tracking-[0.35em] mb-5 font-medium"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
             {nameAr}
-          </p>
+          </motion.p>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-[#F5F0EB] mb-4 leading-tight">
+          <motion.h1
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-bold text-[#F5F0EB] mb-6 leading-[0.95] tracking-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             {name}
-          </h1>
+          </motion.h1>
 
           {tagline && (
-            <p className="text-lg md:text-xl text-[#D4C9C0] mb-8 max-w-2xl mx-auto font-light">
+            <motion.p
+              className="text-lg md:text-xl text-[#D4C9C0]/80 mb-10 max-w-2xl mx-auto font-light tracking-wide"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
               {tagline}
-            </p>
+            </motion.p>
           )}
 
-          <div className="flex justify-center mb-8">
+          <motion.div
+            className="flex justify-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
             <RatingBadge rating={rating} reviews={500} />
-          </div>
+          </motion.div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center gap-5"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+          >
             <Link href="/menu">
               <Button variant="primary" size="lg">
                 Explore Our Menu
@@ -68,17 +106,21 @@ export default function Hero({ heroImage, logo, name, nameAr, tagline, rating }:
                 Reserve a Table
               </Button>
             </Link>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
 
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-[#C8A45C] rounded-full mt-2" />
+        <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center">
+          <motion.div
+            className="w-1 h-3 bg-[#C8A45C] rounded-full mt-2"
+            animate={{ y: [0, 12, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
         </div>
       </motion.div>
     </section>

@@ -1,16 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600&family=Inter:wght@200;300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
   --gold: #C8A45C;
-  --gold-dark: #B8933D;
-  --dark: #1A1A1A;
-  --dark-soft: #2C2420;
+  --gold-light: #D4B87A;
+  --gold-dark: #A8893E;
+  --dark: #111111;
+  --dark-soft: #1A1A1A;
+  --dark-card: #1E1E1E;
   --light: #FAFAF8;
   --cream: #F5F0EB;
   --muted: #D4C9C0;
   --text-muted: #6B5E56;
-  --border: #E8E0D8;
+  --text-light: #9B8B80;
+  --border: rgba(200, 164, 92, 0.15);
+  --glass: rgba(17, 17, 17, 0.85);
+  --glass-border: rgba(200, 164, 92, 0.12);
+  --shadow-gold: 0 4px 30px rgba(200, 164, 92, 0.15);
+  --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.08);
 }
 
 @theme inline {
@@ -30,6 +37,8 @@ body {
   background: var(--light);
   color: var(--dark-soft);
   font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
@@ -53,4 +62,54 @@ html {
 
 .font-arabic {
   font-family: 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+}
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(1.1);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(200, 164, 92, 0.1);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gold-border-bottom {
+  border-image: linear-gradient(90deg, transparent, var(--gold), transparent) 1;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(200, 164, 92, 0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes ripple {
+  from { transform: scale(0); opacity: 1; }
+  to { transform: scale(4); opacity: 0; }
 }

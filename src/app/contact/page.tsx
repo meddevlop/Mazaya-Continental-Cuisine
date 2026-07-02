@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import { Phone, Mail, MapPin, Camera, Clock, Send, Loader2, CheckCircle } from "lucide-react"
 import AnimatedSection from "@/components/ui/AnimatedSection"
 import Button from "@/components/ui/Button"
@@ -49,38 +50,56 @@ export default function ContactPage() {
 
   return (
     <div className="bg-[#FAFAF8] min-h-screen">
-      <section className="relative pt-28 pb-12 md:pt-36 md:pb-16 bg-[#1A1A1A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-[#C8A45C] text-sm uppercase tracking-[0.3em] mb-2">{settings.nameAr}</p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-[#F5F0EB]">
+      <section className="relative pt-28 pb-16 md:pt-36 md:pb-20 bg-[#111111] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1A1A] to-[#111111]" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C8A45C]/20 to-transparent" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.p
+            className="text-[#C8A45C] text-xs uppercase tracking-[0.35em] mb-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {settings.nameAr}
+          </motion.p>
+          <motion.h1
+            className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-[#F5F0EB] mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
             Contact Us
-          </h1>
-          <p className="text-[#D4C9C0] mt-4 max-w-2xl mx-auto">
+          </motion.h1>
+          <motion.p
+            className="text-[#9B8B80] mt-4 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
             Get in touch with us for reservations, inquiries, or any questions
-          </p>
+          </motion.p>
         </div>
       </section>
 
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <AnimatedSection>
-              <h2 className="text-2xl font-serif font-bold text-[#2C2420] mb-8">Get in Touch</h2>
-              <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20">
+            <AnimatedSection direction="left">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#111111] mb-10">Get in Touch</h2>
+              <div className="space-y-4">
                 {contactInfo.map((info) => (
                   <a
                     key={info.label}
                     href={info.href}
                     target={info.label === "Location" || info.label === "Instagram" ? "_blank" : undefined}
                     rel={info.label === "Location" || info.label === "Instagram" ? "noopener noreferrer" : undefined}
-                    className="flex items-center gap-4 p-4 bg-white border border-[#E8E0D8] hover:border-[#C8A45C] transition-colors group"
+                    className="flex items-center gap-5 p-5 bg-white border border-[#E8E0D8]/60 hover:border-[#C8A45C]/30 hover:shadow-lg transition-all duration-300 group"
                   >
-                    <div className="w-12 h-12 bg-[#C8A45C]/10 flex items-center justify-center group-hover:bg-[#C8A45C]/20 transition-colors">
-                      <info.icon size={20} className="text-[#C8A45C]" />
+                    <div className="w-14 h-14 bg-gradient-to-br from-[#C8A45C]/10 to-[#D4B87A]/5 flex items-center justify-center group-hover:from-[#C8A45C]/20 group-hover:to-[#D4B87A]/10 transition-all duration-300 flex-shrink-0">
+                      <info.icon size={22} className="text-[#C8A45C]" />
                     </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-[#6B5E56]">{info.label}</p>
-                      <p className="text-[#2C2420] font-semibold group-hover:text-[#C8A45C] transition-colors">
+                    <div className="min-w-0">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-[#6B5E56] mb-0.5">{info.label}</p>
+                      <p className="text-[#111111] font-semibold group-hover:text-[#C8A45C] transition-colors truncate">
                         {info.value}
                       </p>
                     </div>
@@ -88,45 +107,52 @@ export default function ContactPage() {
                 ))}
               </div>
 
-              <div className="mt-8 p-6 bg-[#1A1A1A]">
-                <h3 className="text-[#C8A45C] font-serif font-bold text-lg mb-4 flex items-center gap-2">
-                  <Clock size={18} /> Opening Hours
-                </h3>
-                <div className="space-y-2">
-                  {settings.hours.map((h) => (
-                    <div key={h.day} className="flex justify-between text-sm">
-                      <span className="text-[#D4C9C0]">{h.day}</span>
-                      <span className="text-[#F5F0EB] font-medium">{h.time}</span>
-                    </div>
-                  ))}
+              <div className="mt-10 p-8 bg-[#111111] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#111111]" />
+                <div className="relative">
+                  <h3 className="text-[#C8A45C] font-serif font-bold text-xl mb-5 flex items-center gap-2">
+                    <Clock size={18} /> Opening Hours
+                  </h3>
+                  <div className="space-y-3">
+                    {settings.hours.map((h) => (
+                      <div key={h.day} className="flex justify-between text-sm border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                        <span className="text-[#9B8B80]">{h.day}</span>
+                        <span className="text-[#F5F0EB] font-medium">{h.time}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </AnimatedSection>
 
-            <AnimatedSection delay={0.2}>
-              <h2 className="text-2xl font-serif font-bold text-[#2C2420] mb-8">Send Us a Message</h2>
-              <form onSubmit={handleSubmit} className="bg-white border border-[#E8E0D8] p-8 space-y-4">
+            <AnimatedSection direction="right" delay={0.15}>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#111111] mb-10">Send Us a Message</h2>
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-[#6B5E56] mb-1">Name *</label>
-                  <input type="text" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full px-4 py-2.5 border border-[#E8E0D8] text-[#2C2420] text-sm focus:outline-none focus:border-[#C8A45C]" />
+                  <label className="block text-xs font-medium text-[#6B5E56] mb-2 uppercase tracking-wider">Name *</label>
+                  <input type="text" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                    className="w-full px-5 py-3.5 bg-white border border-[#E8E0D8]/60 text-[#111111] text-sm focus:outline-none focus:border-[#C8A45C] transition-colors" />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-[#6B5E56] mb-1">Email *</label>
-                    <input type="email" required value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full px-4 py-2.5 border border-[#E8E0D8] text-[#2C2420] text-sm focus:outline-none focus:border-[#C8A45C]" />
+                    <label className="block text-xs font-medium text-[#6B5E56] mb-2 uppercase tracking-wider">Email *</label>
+                    <input type="email" required value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                      className="w-full px-5 py-3.5 bg-white border border-[#E8E0D8]/60 text-[#111111] text-sm focus:outline-none focus:border-[#C8A45C] transition-colors" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#6B5E56] mb-1">Phone</label>
-                    <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full px-4 py-2.5 border border-[#E8E0D8] text-[#2C2420] text-sm focus:outline-none focus:border-[#C8A45C]" />
+                    <label className="block text-xs font-medium text-[#6B5E56] mb-2 uppercase tracking-wider">Phone</label>
+                    <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                      className="w-full px-5 py-3.5 bg-white border border-[#E8E0D8]/60 text-[#111111] text-sm focus:outline-none focus:border-[#C8A45C] transition-colors" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#6B5E56] mb-1">Message *</label>
-                  <textarea required rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} className="w-full px-4 py-2.5 border border-[#E8E0D8] text-[#2C2420] text-sm focus:outline-none focus:border-[#C8A45C] resize-none" />
+                  <label className="block text-xs font-medium text-[#6B5E56] mb-2 uppercase tracking-wider">Message *</label>
+                  <textarea required rows={5} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                    className="w-full px-5 py-3.5 bg-white border border-[#E8E0D8]/60 text-[#111111] text-sm focus:outline-none focus:border-[#C8A45C] transition-colors resize-none" />
                 </div>
-                {status === "error" && <p className="text-red-500 text-sm">Something went wrong. Please try again.</p>}
+                {status === "error" && <p className="text-red-500 text-sm bg-red-50 px-4 py-2">Something went wrong. Please try again.</p>}
                 {status === "success" && (
-                  <div className="flex items-center gap-2 text-green-600 text-sm">
+                  <div className="flex items-center gap-2 text-green-700 text-sm bg-green-50 px-4 py-3">
                     <CheckCircle size={16} /> Message sent successfully! We&apos;ll get back to you soon.
                   </div>
                 )}
@@ -136,16 +162,16 @@ export default function ContactPage() {
                 </Button>
               </form>
 
-              <div className="mt-8">
-                <div className="aspect-[16/9] bg-[#E8E0D8] flex items-center justify-center text-[#D4C9C0] text-sm border border-[#E8E0D8]">
-                  <div className="text-center p-8">
-                    <MapPin size={32} className="mx-auto mb-2 text-[#C8A45C]" />
-                    <p>{settings.address}</p>
+              <div className="mt-10">
+                <div className="aspect-[16/9] bg-gradient-to-br from-[#E8E0D8] to-[#D4C9C0] flex items-center justify-center border border-[#E8E0D8]/60 relative overflow-hidden">
+                  <div className="text-center p-8 relative z-10">
+                    <MapPin size={36} className="mx-auto mb-3 text-[#C8A45C]" />
+                    <p className="text-[#111111] font-medium">{settings.address}</p>
                     <a
                       href="https://maps.app.goo.gl/Czz518iv9vguZKwB7"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#C8A45C] hover:underline text-sm mt-2 inline-block"
+                      className="text-[#C8A45C] hover:text-[#D4B87A] text-sm mt-2 inline-block transition-colors underline underline-offset-4"
                     >
                       Open in Google Maps
                     </a>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, Phone } from "lucide-react"
 import { business } from "@/data/business"
 
@@ -19,8 +20,8 @@ export default function Navbar() {
   const [settings, setSettings] = useState({ name: business.name, phone: business.phone })
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50)
-    window.addEventListener("scroll", handleScroll)
+    const handleScroll = () => setIsScrolled(window.scrollY > 60)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -32,68 +33,96 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? "bg-[#1A1A1A]/95 backdrop-blur-md shadow-lg" : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+        isScrolled ? "glass" : "bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-[#C8A45C] font-serif text-xl md:text-2xl font-bold tracking-wide">
-              {settings.name}
-            </span>
-          </Link>
+      <nav className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${
+        isScrolled ? "h-16 md:h-18" : "h-20 md:h-24"
+      } flex items-center justify-between`}>
+        <Link href="/" className="flex items-center gap-2 group">
+          <motion.span
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className={`font-serif font-bold tracking-wide transition-all duration-700 ${
+              isScrolled ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"
+            } gold-gradient`}
+          >
+            {settings.name}
+          </motion.span>
+        </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+        <div className="hidden md:flex items-center gap-10">
+          {navLinks.map((link, i) => (
+            <motion.div
+              key={link.href}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+            >
               <Link
-                key={link.href}
                 href={link.href}
-                className="text-[#F5F0EB] hover:text-[#C8A45C] transition-colors duration-300 text-sm uppercase tracking-widest font-medium"
+                className="relative text-[#D4C9C0] hover:text-[#C8A45C] transition-colors duration-300 text-xs uppercase tracking-[0.25em] font-medium group"
               >
                 {link.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C8A45C] transition-all duration-300 group-hover:w-full" />
               </Link>
-            ))}
+            </motion.div>
+          ))}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             <Link
               href="/reservations"
-              className="bg-[#C8A45C] text-[#1A1A1A] px-5 py-2 text-sm font-bold uppercase tracking-wider hover:bg-[#B8933D] transition-colors duration-300"
+              className="bg-gradient-to-r from-[#C8A45C] to-[#D4B87A] text-[#111111] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.2em] hover:from-[#B8933D] hover:to-[#C8A45C] transition-all duration-500 shadow-[0_4px_20px_rgba(200,164,92,0.25)] hover:shadow-[0_6px_30px_rgba(200,164,92,0.35)]"
             >
               Reserve
             </Link>
-          </div>
-
-          <div className="flex items-center gap-4 md:hidden">
-            <a href={`tel:${settings.phone}`} className="text-[#C8A45C]">
-              <Phone size={20} />
-            </a>
-            <button onClick={() => setIsOpen(!isOpen)} className="text-[#F5F0EB]">
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+          </motion.div>
         </div>
 
-        {isOpen && (
-          <div className="md:hidden bg-[#1A1A1A] border-t border-white/10 pb-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 text-[#F5F0EB] hover:text-[#C8A45C] transition-colors text-sm uppercase tracking-widest"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/reservations"
-              onClick={() => setIsOpen(false)}
-              className="block mx-4 mt-4 bg-[#C8A45C] text-[#1A1A1A] text-center px-5 py-3 text-sm font-bold uppercase tracking-wider"
-            >
-              Reserve a Table
-            </Link>
-          </div>
-        )}
+        <div className="flex items-center gap-4 md:hidden">
+          <a href={`tel:${settings.phone}`} className="text-[#C8A45C]">
+            <Phone size={18} />
+          </a>
+          <button onClick={() => setIsOpen(!isOpen)} className="text-[#F5F0EB] p-1" aria-label="Toggle menu">
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </nav>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden glass overflow-hidden"
+          >
+            <div className="px-4 pb-6 pt-2 space-y-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="block py-3 text-[#D4C9C0] hover:text-[#C8A45C] transition-colors text-sm uppercase tracking-[0.2em] border-b border-white/5"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <Link
+                href="/reservations"
+                onClick={() => setIsOpen(false)}
+                className="block mt-4 bg-gradient-to-r from-[#C8A45C] to-[#D4B87A] text-[#111111] text-center px-5 py-3 text-sm font-bold uppercase tracking-[0.2em]"
+              >
+                Reserve a Table
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   )
 }

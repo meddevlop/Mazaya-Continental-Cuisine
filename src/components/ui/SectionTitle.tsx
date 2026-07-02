@@ -1,3 +1,7 @@
+"use client"
+
+import { motion } from "framer-motion"
+
 interface SectionTitleProps {
   title: string
   titleAr?: string
@@ -8,19 +12,37 @@ interface SectionTitleProps {
 
 export default function SectionTitle({ title, titleAr, subtitle, light = false, center = true }: SectionTitleProps) {
   return (
-    <div className={`mb-12 ${center ? "text-center" : ""}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
+      className={`mb-16 md:mb-20 ${center ? "text-center" : ""}`}
+    >
       {titleAr && (
-        <p className="font-arabic text-[#C8A45C] text-lg mb-1">{titleAr}</p>
+        <p className="font-arabic text-[#C8A45C] text-lg md:text-xl mb-2 tracking-wide">{titleAr}</p>
       )}
-      <h2 className={`text-3xl md:text-4xl lg:text-5xl font-serif font-bold ${light ? "text-[#F5F0EB]" : "text-[#2C2420]"}`}>
+      <h2
+        className={`font-serif font-bold leading-tight ${
+          center ? "mx-auto" : ""
+        } ${
+          light
+            ? "text-[#F5F0EB]"
+            : "text-[#111111]"
+        } text-4xl md:text-5xl lg:text-6xl`}
+      >
         {title}
       </h2>
-      <div className={`w-16 h-0.5 mt-4 mx-auto ${center ? "mx-auto" : ""} bg-[#C8A45C]`} />
+      <div className={`w-20 h-[2px] mt-6 ${center ? "mx-auto" : ""} bg-gradient-to-r from-[#C8A45C] to-[#D4B87A]`} />
       {subtitle && (
-        <p className={`mt-4 text-base md:text-lg max-w-2xl ${center ? "mx-auto" : ""} ${light ? "text-[#D4C9C0]" : "text-[#6B5E56]"}`}>
+        <p
+          className={`mt-6 text-base md:text-lg max-w-2xl leading-relaxed ${
+            center ? "mx-auto" : ""
+          } ${light ? "text-[#9B8B80]" : "text-[#6B5E56]"}`}
+        >
           {subtitle}
         </p>
       )}
-    </div>
+    </motion.div>
   )
 }
