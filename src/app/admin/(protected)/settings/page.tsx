@@ -6,13 +6,12 @@ import { Save, Loader2, Check } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
-import { Tabs, ImageUpload, ColorPicker, useToast } from "@/components/admin/ui"
-import { FormField, TextareaField, ToggleField } from "@/components/admin/ui/FormField"
+import { Tabs, ImageUpload, useToast } from "@/components/admin/ui"
+import { FormField, TextareaField } from "@/components/admin/ui/FormField"
 import type { SettingsData } from "@/services/settings.service"
 
 const settingsTabs = [
   { id: "general", label: "General" },
-  { id: "appearance", label: "Appearance" },
   { id: "hero", label: "Hero" },
   { id: "homepage", label: "Homepage" },
   { id: "contact", label: "Contact" },
@@ -39,7 +38,7 @@ const defaultSettings: SettingsData = {
   instagram: "https://instagram.com/mazaya_continental",
   facebook: "",
   google_review_url: "",
-  currency: "EGP",
+  currency: "AED",
   locale: "en",
   primary_color: "#C8A45C",
   secondary_color: "#B8933D",
@@ -108,23 +107,8 @@ export default function SettingsPage() {
               <FormField label="Tagline" value={settings.tagline ?? ""} onChange={v => update("tagline", v)} />
               <FormField label="Tagline (AR)" value={settings.tagline_ar ?? ""} onChange={v => update("tagline_ar", v)} dir="rtl" />
             </div>
-            <FormField label="Currency" value={settings.currency ?? "EGP"} onChange={v => update("currency", v)} />
+            <FormField label="Currency" value={settings.currency ?? "AED"} onChange={v => update("currency", v)} />
             <ImageUpload currentUrl={settings.logo} onUpload={url => update("logo", url)} onRemove={() => update("logo", "")} label="Restaurant Logo" bucket="LOGO" />
-          </Section>
-        )}
-
-        {activeTab === "appearance" && (
-          <Section title="Appearance">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <ColorPicker label="Primary Color" value={settings.primary_color ?? "#C8A45C"} onChange={v => update("primary_color", v)} />
-              <ColorPicker label="Secondary Color" value={settings.secondary_color ?? "#B8933D"} onChange={v => update("secondary_color", v)} />
-              <ColorPicker label="Accent Color" value={settings.accent_color ?? "#D4C9C0"} onChange={v => update("accent_color", v)} />
-            </div>
-            <ToggleField label="Dark Mode (default theme)" checked={settings.dark_mode ?? true} onChange={v => update("dark_mode", v)} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField label="Heading Font" value={settings.font_heading ?? "Playfair Display"} onChange={v => update("font_heading", v)} placeholder="Playfair Display" />
-              <FormField label="Body Font" value={settings.font_body ?? "Inter"} onChange={v => update("font_body", v)} placeholder="Inter" />
-            </div>
           </Section>
         )}
 

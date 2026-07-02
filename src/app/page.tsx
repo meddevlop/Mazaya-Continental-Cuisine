@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react"
 import Hero from "@/components/home/Hero"
 import FeaturedDishes from "@/components/home/FeaturedDishes"
+import { menuCategories } from "@/data/menu"
 import AboutSection from "@/components/home/AboutSection"
 import GalleryPreview from "@/components/home/GalleryPreview"
 import InstagramFeed from "@/components/home/InstagramFeed"
+import SignUpCTA from "@/components/home/SignUpCTA"
 import ReservationCTA from "@/components/home/ReservationCTA"
 import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 
@@ -72,14 +74,20 @@ export default function HomePage() {
           tagline: settings.tagline || fallback.tagline,
           description: settings.description || "",
           storyImage: settings.story_image || "",
-          featuredDishes: (menuItems as any[])
-            .filter((item: any) => item.is_featured)
-            .slice(0, 4)
-            .map((item: any) => ({
-              name: item.name,
-              description: item.description,
-              image: item.image_url || "",
-            })),
+          featuredDishes: (menuItems as any[]).some((item: any) => item.is_featured)
+            ? (menuItems as any[])
+                .filter((item: any) => item.is_featured)
+                .slice(0, 4)
+                .map((item: any) => ({
+                  name: item.name,
+                  description: item.description,
+                  image: item.image_url || "",
+                }))
+            : menuCategories.flatMap(c => c.items).filter(i => i.image).slice(0, 4).map(i => ({
+                name: i.name,
+                description: i.description || "",
+                image: i.image || "",
+              })),
           galleryImages: (galleryItems as any[])
             .filter((item: any) => item.is_active !== false)
             .slice(0, 6)
@@ -114,6 +122,7 @@ export default function HomePage() {
       <AboutSection image={data.storyImage} description={data.description} />
       <GalleryPreview images={data.galleryImages} />
       <InstagramFeed instagram={data.instagram} />
+      <SignUpCTA />
       <ReservationCTA heroImage={data.heroImage} phone={data.phone} />
     </>
   )

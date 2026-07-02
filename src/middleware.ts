@@ -17,6 +17,7 @@ function isSessionValid(token: string): boolean {
 
 export function middleware(request: NextRequest) {
   const session = request.cookies.get("admin_session")?.value
+  const role = request.cookies.get("admin_role")?.value
   const { pathname } = request.nextUrl
 
   const isAdminPath = pathname.startsWith("/admin")
@@ -28,7 +29,6 @@ export function middleware(request: NextRequest) {
 
   if (isStaticAsset) return NextResponse.next()
 
-  // Auth API and registration need to be accessible without session
   if (isAuthApiPath || isRegisterApiPath) return NextResponse.next()
 
   if (isAdminPath && !isLoginPath && !isRegisterPath) {
@@ -36,6 +36,9 @@ export function middleware(request: NextRequest) {
       const loginUrl = new URL(ADMIN_LOGIN, request.url)
       loginUrl.searchParams.set("redirect", pathname)
       return NextResponse.redirect(loginUrl)
+    }
+    if (role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url))
     }
   }
 

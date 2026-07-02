@@ -69,18 +69,30 @@ export default function Navbar() {
               </Link>
             </motion.div>
           ))}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Link
-              href="/reservations"
-              className="bg-gradient-to-r from-[#C8A45C] to-[#D4B87A] text-[#111111] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.2em] hover:from-[#B8933D] hover:to-[#C8A45C] transition-all duration-500 shadow-[0_4px_20px_rgba(200,164,92,0.25)] hover:shadow-[0_6px_30px_rgba(200,164,92,0.35)]"
+          <div className="flex items-center gap-4">
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 }}
+              className="hidden lg:flex items-center gap-3"
             >
-              Reserve
-            </Link>
-          </motion.div>
+              <Link href="/signup" className="text-[#D4C9C0] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
+                Sign Up
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Link
+                href="/reservations"
+                className="bg-gradient-to-r from-[#C8A45C] to-[#D4B87A] text-[#111111] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.2em] hover:from-[#B8933D] hover:to-[#C8A45C] transition-all duration-500 shadow-[0_4px_20px_rgba(200,164,92,0.25)] hover:shadow-[0_6px_30px_rgba(200,164,92,0.35)]"
+              >
+                Reserve
+              </Link>
+            </motion.div>
+          </div>
         </div>
 
         <div className="flex items-center gap-4 md:hidden">
@@ -112,10 +124,19 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <div className="flex items-center gap-4 mt-4 px-1">
+                <Link
+                  href="/signup"
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#D4C9C0] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
+                >
+                  Sign Up
+                </Link>
+              </div>
               <Link
                 href="/reservations"
                 onClick={() => setIsOpen(false)}
-                className="block mt-4 bg-gradient-to-r from-[#C8A45C] to-[#D4B87A] text-[#111111] text-center px-5 py-3 text-sm font-bold uppercase tracking-[0.2em]"
+                className="block mt-3 bg-gradient-to-r from-[#C8A45C] to-[#D4B87A] text-[#111111] text-center px-5 py-3 text-sm font-bold uppercase tracking-[0.2em]"
               >
                 Reserve a Table
               </Link>

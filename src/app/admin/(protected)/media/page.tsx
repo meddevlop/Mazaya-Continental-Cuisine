@@ -91,12 +91,13 @@ export default function MediaPage() {
   const handleDelete = async () => {
     if (!deleteTarget) return; setDeleting(true)
     try {
-      await fetch(`/admin/api/media?id=${deleteTarget.id}`, { method: "DELETE" })
+      const res = await fetch(`/admin/api/media?name=${encodeURIComponent(deleteTarget.name)}&folder=${encodeURIComponent(deleteTarget.folder)}`, { method: "DELETE" })
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Delete failed") }
       setDeleteTarget(null)
       if (selectedItem?.id === deleteTarget.id) setSelectedItem(null)
       toast("success", "File deleted")
       fetchData()
-    } catch { toast("error", "Failed to delete") }
+    } catch (e) { toast("error", e instanceof Error ? e.message : "Failed to delete") }
     finally { setDeleting(false) }
   }
 
@@ -197,21 +198,23 @@ export default function MediaPage() {
           {filtered.map((item, i) => (
             <motion.div
               key={item.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.02 }}
-              className="group relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-[#111] to-[#0D0D0D] border border-white/[0.06] cursor-pointer"
+              className="relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-[#111] to-[#0D0D0D] border border-white/[0.06] cursor-pointer"
               onClick={() => setSelectedItem(item)}
             >
               <img src={item.url} alt={item.name} className="w-full h-full object-cover" loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden") }} />
               <div className="absolute inset-0 flex items-center justify-center bg-white/5 hidden">
                 <Image size={32} className="text-[#6B5E56] opacity-30" />
               </div>
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                <button onClick={e => { e.stopPropagation(); setRenameTarget(item); setRenameValue(item.name) }} className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors touch-manipulation" title="Rename"><Edit3 size={14} /></button>
-                <button onClick={e => { e.stopPropagation(); copyUrl(item.url, item.id) }} className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors touch-manipulation" title="Copy URL">
-                  {copiedId === item.id ? <Check size={14} /> : <Copy size={14} />}
+              <div className="absolute inset-x-0 top-0 z-10 flex justify-end gap-1 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={e => { e.stopPropagation(); copyUrl(item.url, item.id) }} className="p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-colors touch-manipulation" title="Copy URL">
+                  {copiedId === item.id ? <Check size={12} /> : <Copy size={12} />}
                 </button>
-                <button onClick={e => { e.stopPropagation(); setDeleteTarget(item) }} className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-colors touch-manipulation"><Trash2 size={14} /></button>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+              <div className="absolute bottom-0 left-0 right-0 flex items-center justify-end gap-1 p-1.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10">
+                <button onClick={e => { e.stopPropagation(); setRenameTarget(item); setRenameValue(item.name) }} className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors touch-manipulation" title="Rename"><Edit3 size={12} /></button>
+                <button onClick={e => { e.stopPropagation(); setDeleteTarget(item) }} className="p-1.5 rounded-lg bg-red-500/30 hover:bg-red-500/50 text-red-300 transition-colors touch-manipulation"><Trash2 size={12} /></button>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 pb-8 pt-6 px-2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none">
                 <p className="text-[10px] text-[#D4C9C0] truncate">{item.name}</p>
                 <p className="text-[8px] text-[#6B5E56]">{formatSize(item.size)}</p>
               </div>

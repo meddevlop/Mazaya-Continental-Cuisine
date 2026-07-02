@@ -62,6 +62,32 @@ export async function logoutAdmin(): Promise<void> {
   await fetch("/admin/api/auth", { method: "DELETE" })
 }
 
+export interface SignupCredentials {
+  name: string
+  email: string
+  password: string
+}
+
+export async function signupUser(credentials: SignupCredentials): Promise<AuthResponse> {
+  try {
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      return { success: false, error: data.error || "Registration failed" }
+    }
+
+    return { success: true, redirect: data.redirect, user: data.user }
+  } catch {
+    return { success: false, error: "Connection error. Please try again." }
+  }
+}
+
 export async function checkAdminSession(): Promise<boolean> {
   try {
     const res = await fetch("/admin/api/auth")

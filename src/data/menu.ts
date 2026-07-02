@@ -60,6 +60,7 @@ export const menuCategories: MenuCategory[] = [
         name: "Mixed Grill",
         description: "Meat kebab, tikka, chicken kebab, and shish tawook",
         price: 48,
+        image: "/images/dishes/SaveClip.App_729589813_17967036435089025_8296496840128878519_n.jpg",
         sizes: [
           { label: "Meal", price: 48 },
           { label: "1/2 KG", price: 80 },
@@ -70,6 +71,7 @@ export const menuCategories: MenuCategory[] = [
         name: "Shish Tawook",
         description: "Chicken breast skewers marinated with our special spices",
         price: 36,
+        image: "/images/dishes/SaveClip.App_641732911_17950664787089025_8381314374132343110_n.jpg",
         sizes: [
           { label: "Meal", price: 36 },
           { label: "1/2 KG", price: 65 },
@@ -90,6 +92,7 @@ export const menuCategories: MenuCategory[] = [
         name: "Lamb Chops",
         description: "Australian lamb ribs with black pepper",
         price: 58,
+        image: "/images/dishes/SaveClip.App_712444755_17964220836089025_1246926864230902872_n.jpg",
         sizes: [
           { label: "Meal", price: 58 },
           { label: "1/2 KG", price: 90 },
@@ -100,6 +103,7 @@ export const menuCategories: MenuCategory[] = [
         name: "Arayes",
         description: "Fresh grilled bread stuffed with lamb meat and vegetables",
         price: 42,
+        image: "/images/dishes/SaveClip.App_638325049_17950124334089025_2504738109183251131_n.jpg",
         sizes: [
           { label: "Meal", price: 42 },
           { label: "1/2 KG", price: 70 },
@@ -110,6 +114,7 @@ export const menuCategories: MenuCategory[] = [
         name: "Seabream Fish",
         description: "Fresh supreme fish marinated with spices",
         price: 60,
+        image: "/images/dishes/SaveClip.App_726289750_17966645163089025_8386665382789018891_n.jpg",
         sizes: [
           { label: "1/2 Whole", price: 36 },
           { label: "1 Whole", price: 65 },
@@ -119,6 +124,7 @@ export const menuCategories: MenuCategory[] = [
         name: "Charcoal Chicken",
         description: "Fresh chicken marinated with spices",
         price: 36,
+        image: "/images/dishes/SaveClip.App_636939710_17950124343089025_1558283533718616450_n.jpg",
         sizes: [
           { label: "1/2 Whole", price: 36 },
           { label: "1 Whole", price: 65 },

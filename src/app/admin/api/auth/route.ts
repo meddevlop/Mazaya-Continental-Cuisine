@@ -35,10 +35,10 @@ export async function GET() {
 
   if (session && isSessionValid(session)) {
     const userEmail = cookieStore.get("admin_email")?.value || "admin@mazayacuisine.com"
-    const isAdmin = userEmail === "admin@mazayacuisine.com"
+    const userRole = cookieStore.get("admin_role")?.value || "user"
     const response = NextResponse.json({
       authenticated: true,
-      user: { name: isAdmin ? "Admin" : userEmail.split("@")[0], email: userEmail, role: isAdmin ? "admin" : "user" },
+      user: { name: userRole === "admin" ? "Admin" : userEmail.split("@")[0], email: userEmail, role: userRole },
     })
     setSessionCookie(response, session, SESSION_DURATION_MS / 1000)
     return response
@@ -68,15 +68,43 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: error.message || "Invalid credentials" }, { status: 401 })
     }
 
-    const isAdmin = email === "admin@mazayacuisine.com"
     const token = createSessionToken()
+
+    let role = "user"
+    if (email === "admin@mazayacuisine.com") {
+      role = "admin"
+    } else {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("email", email)
+        .single()
+      if (profile?.role) {
+        role = profile.role
+      } else {
+        await supabase.from("profiles").insert({
+          id: data.user?.id,
+          email,
+          full_name: email.split("@")[0],
+          role: "user",
+        })
+      }
+    }
+
     const response = NextResponse.json({
       success: true,
-      redirect: "/admin/dashboard",
-      user: { name: isAdmin ? "Admin" : email.split("@")[0], email, role: isAdmin ? "admin" : "user" },
+      redirect: role === "admin" ? "/admin/dashboard" : "/",
+      user: { name: role === "admin" ? "Admin" : email.split("@")[0], email, role },
     })
     setSessionCookie(response, token, SESSION_DURATION_MS / 1000)
     response.cookies.set("admin_email", email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: SESSION_DURATION_MS / 1000,
+      path: "/",
+    })
+    response.cookies.set("admin_role", role, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

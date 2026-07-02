@@ -57,7 +57,6 @@ function LoginForm() {
               <span className="text-[#1A1A1A] font-bold text-xl">M</span>
             </div>
             <h1 className="text-xl font-bold text-[#F5F0EB]">Admin Login</h1>
-            <p className="text-sm text-[#6B5E56] mt-1">Mazaya Continental Cuisine</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -169,7 +168,7 @@ function LoginForm() {
 
           <p className="text-center text-xs text-[#6B5E56] mt-6">
             Don&apos;t have an account?{" "}
-            <a href="/admin/register" className="text-[#C8A45C] hover:text-[#B8933D] transition-colors font-medium">
+            <a href="/signup" className="text-[#C8A45C] hover:text-[#B8933D] transition-colors font-medium">
               Create one
             </a>
           </p>

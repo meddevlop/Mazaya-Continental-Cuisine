@@ -62,7 +62,7 @@ function mapRow(row: any): SettingsData {
     instagram: row.instagram || "",
     facebook: row.facebook || "",
     google_review_url: row.google_review_url || "",
-    currency: row.currency || "EGP",
+    currency: row.currency || "AED",
     rating: row.rating ?? 4.9,
     locale: row.locale || "en",
     primary_color: row.primary_color || "#C8A45C",

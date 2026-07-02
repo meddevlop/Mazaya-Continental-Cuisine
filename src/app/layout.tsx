@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
-import Navbar from "@/components/layout/Navbar"
-import Footer from "@/components/layout/Footer"
-import MobileStickyBar from "@/components/layout/MobileStickyBar"
+import ConditionalNav from "@/components/layout/ConditionalNav"
+import ThemeProvider from "@/components/layout/ThemeProvider"
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -100,10 +99,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <MobileStickyBar />
+        <ThemeProvider>
+          <ConditionalNav>{children}</ConditionalNav>
+        </ThemeProvider>
       </body>
     </html>
   )

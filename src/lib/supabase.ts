@@ -16,7 +16,14 @@ async function fileToBase64(file: any): Promise<string | null> {
 }
 
 function buildMockClient(): SupabaseClient {
-  const store: Record<string, any[]> = {}
+  const store: Record<string, any[]> = {
+    profiles: [
+      { id: "mock_admin_1", email: "admin@mazayacuisine.com", full_name: "Admin", role: "admin", created_at: new Date().toISOString() },
+    ],
+    settings: [
+      { id: "mock_settings_1", restaurant_name: "Mazaya Continental Cuisine", tagline: "Continental Dining Experience in Dubai", phone: "+97145911911", email: "info@mazayacuisine.com", address: "26, Al-Saudia St., Al-Montazah, Sidi Gaber, Alexandria", instagram: "https://instagram.com/mazaya_continental", opening_hours: "Mon-Sun: 12:00 PM - 12:00 AM", currency: "AED", primary_color: "#C8A45C", secondary_color: "#B8933D", accent_color: "#D4C9C0", dark_mode: true, font_heading: "Playfair Display", font_body: "Inter", footer_copyright: "© 2026 Mazaya Continental Cuisine. All rights reserved.", created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    ],
+  }
   const mockAuthUsers: Array<{ id: string; email: string; password: string }> = [
     { id: "mock_admin_1", email: "admin@mazayacuisine.com", password: "Mazaya2026!" },
   ]
@@ -149,6 +156,7 @@ function buildMockClient(): SupabaseClient {
         if (existing) return Promise.resolve({ data: { user: null, session: null }, error: { message: "User already registered", status: 400 } })
         const id = `mock_user_${Date.now().toString(36)}`
         mockAuthUsers.push({ id, email, password })
+        store.profiles = [...(store.profiles || []), { id, email, full_name: "", role: "user", created_at: new Date().toISOString() }]
         const mockUser = { id, email, app_metadata: {}, user_metadata: {}, aud: "authenticated" }
         const mockSession = { user: mockUser, access_token: `mock_at_${Date.now()}`, refresh_token: `mock_rt_${Date.now()}`, expires_in: 604800 }
         return Promise.resolve({ data: { user: mockUser, session: mockSession }, error: null })

@@ -45,6 +45,7 @@ export default function MenuPageClient() {
                 description: i.description || undefined,
                 price: i.price,
                 isBestSeller: i.is_popular || false,
+                image: i.image_url || undefined,
               })),
           })).filter((c: MenuCategoryType) => c.items.length > 0)
           if (grouped.length > 0) setCategories(grouped)

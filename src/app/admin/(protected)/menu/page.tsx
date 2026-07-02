@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Edit3, Trash2, Search, X, Loader2, UtensilsCrossed, Star, Eye, EyeOff, Image as ImageIcon, Filter, CalendarCheck } from "lucide-react"
+import { Plus, Edit3, Trash2, Search, X, Loader2, UtensilsCrossed, Star, Eye, EyeOff, Image as ImageIcon, Filter } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
 import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
@@ -104,9 +104,9 @@ export default function MenuPage() {
     <>
       <PageHeader title="Menu Items" description="Manage your restaurant menu — 70+ items across 13 categories"
         action={
-          <a href="/admin/reservations" className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#C8A45C] text-[#1A1A1A] text-sm font-semibold hover:bg-[#B8933D] transition-colors">
-            <CalendarCheck size={16} /> Reservations
-          </a>
+          <button onClick={() => { setEditingId(null); setForm(emptyForm); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#C8A45C] text-[#1A1A1A] text-sm font-semibold hover:bg-[#B8933D] transition-colors">
+            <Plus size={16} /> Add Menu Item
+          </button>
         }
       />
 
@@ -156,7 +156,7 @@ export default function MenuPage() {
             <TextareaField label="Description (AR)" value={form.description_ar} onChange={v => setForm({ ...form, description_ar: v })} placeholder="سمك السلمون الأطلسي الطازج مع صلصة الزبدة والليمون..." dir="rtl" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField label="Price (EGP)" value={form.price} onChange={v => setForm({ ...form, price: v })} type="number" required placeholder="0.00" error={validation.price} />
+            <FormField label="Price (AED)" value={form.price} onChange={v => setForm({ ...form, price: v })} type="number" required placeholder="0.00" error={validation.price} />
             <SelectField label="Category" value={form.category_id} onChange={v => setForm({ ...form, category_id: v })} options={categories.map(c => ({ value: c.id, label: c.name }))} placeholder="Select category" required />
             <FormField label="Sort Order" value={form.sort_order} onChange={v => setForm({ ...form, sort_order: v })} type="number" placeholder="0" />
           </div>
@@ -198,7 +198,7 @@ export default function MenuPage() {
                   <p className="text-xs text-[#6B5E56] mt-0.5">{item.name_ar} · {item.category_name}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[#C8A45C] font-semibold text-sm">{item.price.toLocaleString()} EGP</span>
+                  <span className="text-[#C8A45C] font-semibold text-sm">{item.price.toLocaleString()} AED</span>
                   <button onClick={() => handleEdit(item)} className="p-2 rounded-lg text-[#6B5E56] hover:text-[#C8A45C] hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-all"><Edit3 size={15} /></button>
                   <button onClick={() => setDeleteTarget(item)} className="p-2 rounded-lg text-[#6B5E56] hover:text-red-400 hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-all"><Trash2 size={15} /></button>
                 </div>

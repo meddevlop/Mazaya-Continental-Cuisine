@@ -17,12 +17,23 @@ interface AnalyticsOverview {
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsOverview | null>(null)
+  const [currency, setCurrency] = useState("AED")
   const [loading, setLoading] = useState(true); const [error, setError] = useState("")
 
   const fetchData = useCallback(async () => {
     setLoading(true)
-    try { const res = await fetch("/admin/api/analytics"); if (!res.ok) throw new Error(); setData(await res.json()) }
-    catch { setError("Failed to load analytics") }
+    try {
+      const [analyticsRes, settingsRes] = await Promise.all([
+        fetch("/admin/api/analytics"),
+        fetch("/admin/api/settings"),
+      ])
+      if (!analyticsRes.ok) throw new Error()
+      setData(await analyticsRes.json())
+      if (settingsRes.ok) {
+        const s = await settingsRes.json()
+        if (s.currency) setCurrency(s.currency)
+      }
+    } catch { setError("Failed to load analytics") }
     finally { setLoading(false) }
   }, [])
 
@@ -42,7 +53,7 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon={<CalendarCheck size={20} />} label="Total Reservations" value={data.total_reservations.toLocaleString()} growth="+12.5%" positive />
         <StatCard icon={<Users size={20} />} label="Total Guests" value={data.total_guests.toLocaleString()} growth="+8.3%" positive />
-        <StatCard icon={<DollarSign size={20} />} label="Total Revenue" value={`EGP ${data.total_revenue.toLocaleString()}`} growth="+15.2%" positive />
+        <StatCard icon={<DollarSign size={20} />} label="Total Revenue" value={`${currency} ${data.total_revenue.toLocaleString()}`} growth="+15.2%" positive />
         <StatCard icon={<Star size={20} />} label="Avg Rating" value={data.average_rating.toString()} growth="4.9 ★" positive />
       </div>
 
@@ -143,7 +154,7 @@ export default function AnalyticsPage() {
           {data.revenue_by_month.slice(-4).map(r => (
             <div key={r.month} className="p-3 rounded-lg bg-white/[0.03]">
               <p className="text-[10px] text-[#6B5E56]">{r.month}</p>
-              <p className="text-sm font-semibold text-[#F5F0EB]">EGP {r.amount.toLocaleString()}</p>
+              <p className="text-sm font-semibold text-[#F5F0EB]">{currency} {r.amount.toLocaleString()}</p>
             </div>
           ))}
         </div>

@@ -72,6 +72,7 @@ export default function Footer() {
                 { label: "About", href: "/about" },
                 { label: "Contact", href: "/contact" },
                 { label: "Reserve a Table", href: "/reservations", gold: true },
+                { label: "Create Account", href: "/signup", gold: true },
               ].map((link) => (
                 <Link
                   key={link.label}

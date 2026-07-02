@@ -26,6 +26,7 @@ const FOLDER_MAP: { name: string; bucket: keyof typeof STORAGE_BUCKETS; path: st
   { name: "Story Images", bucket: "STORY", path: "/story" },
   { name: "Full House Images", bucket: "FULL_HOUSE", path: "/full-house" },
   { name: "Featured Dish Images", bucket: "FEATURED", path: "/featured" },
+  { name: "Dish Images", bucket: "MENU", path: "/menu" },
   { name: "Logo", bucket: "LOGO", path: "/logo" },
   { name: "Icons", bucket: "ICONS", path: "/icons" },
   { name: "Other", bucket: "GALLERY", path: "/other" },
@@ -61,11 +62,12 @@ export async function getMediaFolders() {
   const folders: MediaFolder[] = await Promise.all(
     FOLDER_MAP.map(async (f) => {
       const { data } = await supabase.storage.from(STORAGE_BUCKETS[f.bucket]).list()
+      let count = data?.length || 0
       return {
-        id: `folder_${f.bucket.toLowerCase()}`,
+        id: `folder_${f.name.toLowerCase().replace(/\s+/g, "_")}`,
         name: f.name,
         path: f.path,
-        count: data?.length || 0,
+        count,
       }
     })
   )
@@ -89,10 +91,9 @@ export async function renameMediaItem(id: string, name: string) {
   return { data: { id, name }, error: null }
 }
 
-export async function deleteMediaItem(path: string) {
-  const bucket = (Object.entries(STORAGE_BUCKETS).find(([, v]) => path.startsWith(v))?.[0] || "GALLERY") as keyof typeof STORAGE_BUCKETS
-  const fileName = path.split("/").pop()
-  if (!fileName) return { error: "Invalid path" }
+export async function deleteMediaItem(fileName: string, folder: string) {
+  const bucket = FOLDER_MAP.find(f => f.name === folder)?.bucket || "GALLERY"
+  if (!fileName) return { error: "Invalid file name" }
   const { error } = await supabase.storage.from(STORAGE_BUCKETS[bucket]).remove([fileName])
   if (error) return { error: error.message }
   return { error: null }

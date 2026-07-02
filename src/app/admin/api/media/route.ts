@@ -40,9 +40,10 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url)
-  const id = searchParams.get("id")
-  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 })
-  const { error } = await deleteMediaItem(id)
+  const name = searchParams.get("name")
+  const folder = searchParams.get("folder") || "Other"
+  if (!name) return NextResponse.json({ error: "name required" }, { status: 400 })
+  const { error } = await deleteMediaItem(name, folder)
   if (error) return NextResponse.json({ error }, { status: 500 })
   return NextResponse.json({ success: true })
 }

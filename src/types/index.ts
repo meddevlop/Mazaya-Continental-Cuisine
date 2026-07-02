@@ -5,6 +5,7 @@ export interface MenuItem {
   description?: string
   sizes?: { label: string; price: number }[]
   isBestSeller?: boolean
+  image?: string
 }
 
 export interface MenuCategory {
