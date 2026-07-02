@@ -17,7 +17,7 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null)
   const [settings, setSettings] = useState({ name: business.name, phone: business.phone })
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function Navbar() {
 
   useEffect(() => {
     fetch("/admin/api/auth").then(r => r.json()).then(data => {
-      if (data.authenticated && data.user?.role === "admin") setIsAdmin(true)
+      if (data.authenticated && data.user) setUser(data.user)
     }).catch(() => {})
   }, [])
 
@@ -83,9 +83,19 @@ export default function Navbar() {
               transition={{ delay: 0.25 }}
               className="hidden lg:flex items-center gap-3"
             >
-              {isAdmin && (
-                <Link href="/admin/dashboard" className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors">
-                  <span className="text-[#C8A45C] text-xs font-bold">M</span>
+              {user ? (
+                user.role === "admin" ? (
+                  <Link href="/admin/dashboard" className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors">
+                    <span className="text-[#C8A45C] text-xs font-bold">M</span>
+                  </Link>
+                ) : (
+                  <span className="w-7 h-7 rounded-full bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center text-[#C8A45C] text-xs font-bold">
+                    {user.name?.charAt(0)?.toUpperCase() || "U"}
+                  </span>
+                )
+              ) : (
+                <Link href="/signup" className="text-[#D4C9C0] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
+                  Sign Up
                 </Link>
               )}
             </motion.div>
@@ -133,14 +143,32 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              {isAdmin && (
+              {user ? (
+                user.role === "admin" ? (
+                  <div className="flex items-center gap-4 mt-4 px-1">
+                    <Link
+                      href="/admin/dashboard"
+                      onClick={() => setIsOpen(false)}
+                      className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#C8A45C] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
+                    >
+                      Admin
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-4 mt-4 px-1">
+                    <span className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#D4C9C0] text-xs uppercase tracking-[0.2em]">
+                      {user.name || "User"}
+                    </span>
+                  </div>
+                )
+              ) : (
                 <div className="flex items-center gap-4 mt-4 px-1">
                   <Link
-                    href="/admin/dashboard"
+                    href="/signup"
                     onClick={() => setIsOpen(false)}
-                    className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#C8A45C] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
+                    className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#D4C9C0] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
                   >
-                    Admin
+                    Sign Up
                   </Link>
                 </div>
               )}
