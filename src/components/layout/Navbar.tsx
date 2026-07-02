@@ -17,6 +17,7 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [settings, setSettings] = useState({ name: business.name, phone: business.phone })
 
   useEffect(() => {
@@ -28,6 +29,12 @@ export default function Navbar() {
   useEffect(() => {
     fetch("/api/settings").then(r => r.json()).then(data => {
       if (data.restaurant_name) setSettings({ name: data.restaurant_name, phone: data.phone || business.phone })
+    }).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch("/admin/api/auth").then(r => r.json()).then(data => {
+      if (data.authenticated && data.user?.role === "admin") setIsAdmin(true)
     }).catch(() => {})
   }, [])
 
@@ -76,9 +83,11 @@ export default function Navbar() {
               transition={{ delay: 0.25 }}
               className="hidden lg:flex items-center gap-3"
             >
-              <Link href="/admin/dashboard" className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors">
-                <span className="text-[#C8A45C] text-xs font-bold">M</span>
-              </Link>
+              {isAdmin && (
+                <Link href="/admin/dashboard" className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors">
+                  <span className="text-[#C8A45C] text-xs font-bold">M</span>
+                </Link>
+              )}
             </motion.div>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -124,15 +133,17 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <div className="flex items-center gap-4 mt-4 px-1">
-                <Link
-                  href="/admin/dashboard"
-                  onClick={() => setIsOpen(false)}
-                  className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#C8A45C] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
-                >
-                  Admin
-                </Link>
-              </div>
+              {isAdmin && (
+                <div className="flex items-center gap-4 mt-4 px-1">
+                  <Link
+                    href="/admin/dashboard"
+                    onClick={() => setIsOpen(false)}
+                    className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#C8A45C] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
+                  >
+                    Admin
+                  </Link>
+                </div>
+              )}
               <Link
                 href="/reservations"
                 onClick={() => setIsOpen(false)}
