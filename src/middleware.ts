@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const ADMIN_LOGIN = "/admin/login"
+const ADMIN_LOGIN = "/signup"
 const ADMIN_REGISTER = "/admin/register"
 const ADMIN_DASHBOARD = "/admin/dashboard"
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000

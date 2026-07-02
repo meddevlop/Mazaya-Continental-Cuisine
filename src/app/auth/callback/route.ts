@@ -14,13 +14,13 @@ export async function GET(request: Request) {
   const code = searchParams.get("code")
 
   if (!code) {
-    return NextResponse.redirect(new URL("/admin/login?error=no_code", request.url))
+    return NextResponse.redirect(new URL("/signup?error=no_code", request.url))
   }
 
   const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error || !data?.session?.user) {
-    return NextResponse.redirect(new URL("/admin/login?error=oauth_failed", request.url))
+    return NextResponse.redirect(new URL("/signup?error=oauth_failed", request.url))
   }
 
   const user = data.session.user
