@@ -1,6 +1,6 @@
 "use client"
 
-import { Menu } from "lucide-react"
+import { Menu, ExternalLink } from "lucide-react"
 import { useSidebarStore } from "@/store/sidebarStore"
 import SearchBox from "./SearchBox"
 import NotificationBell from "./NotificationBell"
@@ -22,6 +22,12 @@ export default function TopNavbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <a
+            href="/"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#D4C9C0] hover:text-[#C8A45C] hover:bg-white/5 rounded-lg transition-all uppercase tracking-wider"
+          >
+            <ExternalLink size={14} /> Back to Site
+          </a>
           <SearchBox />
           <NotificationBell />
           <UserMenu />
