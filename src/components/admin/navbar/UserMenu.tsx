@@ -15,7 +15,7 @@ export default function UserMenu() {
   const handleLogout = async () => {
     await fetch("/admin/api/auth", { method: "DELETE" })
     clearUser()
-    router.push("/admin/login")
+    router.push("/")
   }
 
   return (
