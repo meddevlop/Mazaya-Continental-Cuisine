@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { MenuItem as MenuItemType } from "@/types"
 import { formatPrice } from "@/lib/utils"
 
@@ -10,17 +9,6 @@ export default function MenuItem({ item }: MenuItemProps) {
   return (
     <div className="group border-b border-[#E8E0D8]/60 pb-6 mb-6 last:border-0 last:mb-0 last:pb-0 hover:border-[#C8A45C]/20 transition-colors duration-300">
       <div className="flex items-start justify-between gap-4">
-        {item.image && (
-          <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-[#E8E0D8] relative mt-0.5">
-            <Image
-              src={item.image}
-              alt={item.name}
-              fill
-              className="object-cover group-hover:scale-110 transition-transform duration-500"
-              sizes="80px"
-            />
-          </div>
-        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
             <h3 className="text-[#111111] font-serif font-bold text-xl group-hover:text-[#C8A45C] transition-colors duration-300">
