@@ -51,12 +51,6 @@ export default function Navbar() {
             {settings.name}
           </motion.span>
         </Link>
-        <Link
-          href="/admin/dashboard"
-          className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors ml-1"
-        >
-          <span className="text-[#C8A45C] text-xs font-bold">M</span>
-        </Link>
 
         <div className="hidden md:flex items-center gap-10">
           {navLinks.map((link, i) => (
@@ -82,8 +76,8 @@ export default function Navbar() {
               transition={{ delay: 0.25 }}
               className="hidden lg:flex items-center gap-3"
             >
-              <Link href="/signup" className="text-[#D4C9C0] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
-                Sign Up
+              <Link href="/admin/dashboard" className="w-7 h-7 rounded-lg bg-[#C8A45C]/20 border border-[#C8A45C]/30 flex items-center justify-center hover:bg-[#C8A45C]/30 transition-colors">
+                <span className="text-[#C8A45C] text-xs font-bold">M</span>
               </Link>
             </motion.div>
             <motion.div
@@ -132,11 +126,11 @@ export default function Navbar() {
               ))}
               <div className="flex items-center gap-4 mt-4 px-1">
                 <Link
-                  href="/signup"
+                  href="/admin/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#D4C9C0] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
+                  className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#C8A45C] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
                 >
-                  Sign Up
+                  Admin
                 </Link>
               </div>
               <Link
