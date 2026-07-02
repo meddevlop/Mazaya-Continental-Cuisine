@@ -146,14 +146,9 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <>
-                  <Link href="/signup" className="text-[#D4C9C0] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
-                    Sign Up
-                  </Link>
-                  <Link href="/admin/login" className="text-[#6B5E56] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
-                    Login
-                  </Link>
-                </>
+                <Link href="/signup" className="text-[#D4C9C0] hover:text-[#C8A45C] text-xs uppercase tracking-[0.2em] transition-colors duration-300">
+                  Sign Up
+                </Link>
               )}
             </motion.div>
             <motion.div
@@ -224,13 +219,6 @@ export default function Navbar() {
                     className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#D4C9C0] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
                   >
                     Sign Up
-                  </Link>
-                  <Link
-                    href="/admin/login"
-                    onClick={() => setIsOpen(false)}
-                    className="flex-1 text-center py-2.5 rounded border border-white/10 text-[#6B5E56] hover:text-[#C8A45C] hover:border-[#C8A45C]/30 text-xs uppercase tracking-[0.2em] transition-all duration-300"
-                  >
-                    Login
                   </Link>
                 </div>
               )}
