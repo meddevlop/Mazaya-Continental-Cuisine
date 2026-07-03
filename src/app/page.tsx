@@ -14,7 +14,6 @@ import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 interface DishData {
   name: string
   description: string
-  image: string
 }
 
 interface HomeData {
@@ -26,7 +25,6 @@ interface HomeData {
   description: string
   storyImage: string
   featuredDishes: DishData[]
-  galleryImages: string[]
   instagram: string
   phone: string
   rating: number
@@ -41,7 +39,6 @@ const fallback: HomeData = {
   description: "",
   storyImage: "",
   featuredDishes: [],
-  galleryImages: [],
   instagram: "mazaya.cuisine",
   phone: "",
   rating: 4.9,
@@ -55,15 +52,13 @@ export default function HomePage() {
     let cancelled = false
     async function load() {
       try {
-        const [settingsRes, menuRes, galleryRes] = await Promise.all([
+        const [settingsRes, menuRes] = await Promise.all([
           fetch("/api/settings"),
           fetch("/api/menu"),
-          fetch("/api/gallery"),
         ])
 
         const settings = settingsRes.ok ? await settingsRes.json() : {}
         const menuItems = menuRes.ok ? await menuRes.json() : []
-        const galleryItems = galleryRes.ok ? await galleryRes.json() : []
 
         if (cancelled) return
         setData({
@@ -80,18 +75,12 @@ export default function HomePage() {
                 .slice(0, 4)
                 .map((item: any) => ({
                   name: item.name,
-                  description: item.description,
-                  image: item.image_url || "",
+                  description: item.description || "",
                 }))
-            : menuCategories.flatMap(c => c.items).filter(i => i.image).slice(0, 4).map(i => ({
+            : menuCategories.flatMap(c => c.items).slice(0, 4).map(i => ({
                 name: i.name,
                 description: i.description || "",
-                image: i.image || "",
               })),
-          galleryImages: (galleryItems as any[])
-            .filter((item: any) => item.is_active !== false)
-            .slice(0, 6)
-            .map((item: any) => item.url),
           instagram: settings.instagram?.replace(/https:\/\/instagram\.com\//, "").replace(/^@/, "") || fallback.instagram,
           phone: settings.phone || "",
           rating: settings.rating ?? fallback.rating,
@@ -120,7 +109,7 @@ export default function HomePage() {
       />
       <FeaturedDishes dishes={data.featuredDishes} />
       <AboutSection image={data.storyImage} description={data.description} />
-      <GalleryPreview images={data.galleryImages} />
+      <GalleryPreview />
       <InstagramFeed instagram={data.instagram} />
       <SignUpCTA />
       <ReservationCTA heroImage={data.heroImage} phone={data.phone} />
