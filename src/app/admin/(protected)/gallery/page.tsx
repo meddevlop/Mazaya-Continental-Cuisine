@@ -63,8 +63,11 @@ export default function GalleryPage() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return; setDeleting(true)
-    try { await fetch(`/admin/api/gallery/${deleteTarget.id}?url=${encodeURIComponent(deleteTarget.url)}`, { method: "DELETE" }); setDeleteTarget(null); fetchData() }
-    catch { toast("error", "Failed to delete image") }
+    try {
+      const res = await fetch(`/admin/api/gallery/${deleteTarget.id}?url=${encodeURIComponent(deleteTarget.url)}`, { method: "DELETE" })
+      if (!res.ok) throw new Error()
+      setDeleteTarget(null); fetchData()
+    } catch { toast("error", "Failed to delete image") }
     finally { setDeleting(false) }
   }
 
