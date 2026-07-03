@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { updateGalleryItem, deleteGalleryItem } from "@/services/gallery.service"
+import { updateGalleryItem, deleteGalleryItem, getGallery } from "@/services/gallery.service"
 import { inMemoryGallery } from "@/services/memory-store"
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -24,8 +24,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     inMemoryGallery[id]._deleted = true
     return NextResponse.json({ success: true })
   }
-  const parsedUrl = new URL(request.url)
-  const imageUrl = parsedUrl.searchParams.get("url") || undefined
+  const { data: allItems } = await getGallery()
+  const item = (allItems || []).find((i: any) => i.id === id)
+  const imageUrl = item?.url || undefined
   const { error } = await deleteGalleryItem(id, imageUrl)
   if (error) {
     if (error.includes("No rows")) return NextResponse.json({ error: "Not found" }, { status: 404 })
