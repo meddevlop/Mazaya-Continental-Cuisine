@@ -1,4 +1,4 @@
-import { supabase, createServerClient, STORAGE_BUCKETS } from "@/lib/supabase"
+import { createServerClient, STORAGE_BUCKETS } from "@/lib/supabase"
 
 export interface GalleryData {
   id: string
@@ -24,8 +24,10 @@ function mapRow(row: any): GalleryData {
   }
 }
 
+const db = () => createServerClient()
+
 export async function getGallery() {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("gallery")
     .select("*")
     .order("sort_order", { ascending: true })
@@ -34,7 +36,7 @@ export async function getGallery() {
 }
 
 export async function getGalleryByCategory(category: string) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("gallery")
     .select("*")
     .eq("category", category)
@@ -44,7 +46,7 @@ export async function getGalleryByCategory(category: string) {
 }
 
 export async function uploadImage(file: File, bucket: keyof typeof STORAGE_BUCKETS = "GALLERY") {
-  const client = createServerClient()
+  const client = db()
   const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`
   const { data, error } = await client.storage
     .from(STORAGE_BUCKETS[bucket])
@@ -60,7 +62,7 @@ export async function uploadImage(file: File, bucket: keyof typeof STORAGE_BUCKE
 }
 
 export async function createGalleryItem(item: Record<string, any>) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("gallery")
     .insert([item])
     .select()
@@ -70,7 +72,7 @@ export async function createGalleryItem(item: Record<string, any>) {
 }
 
 export async function updateGalleryItem(id: string, updates: Record<string, any>) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("gallery")
     .update(updates)
     .eq("id", id)
@@ -81,13 +83,14 @@ export async function updateGalleryItem(id: string, updates: Record<string, any>
 }
 
 export async function deleteGalleryItem(id: string, imageUrl?: string) {
+  const client = db()
   if (imageUrl) {
     const path = imageUrl.split("/").pop()
     if (path) {
-      await supabase.storage.from(STORAGE_BUCKETS.GALLERY).remove([path])
+      await client.storage.from(STORAGE_BUCKETS.GALLERY).remove([path])
     }
   }
-  const { error } = await supabase.from("gallery").delete().eq("id", id)
+  const { error } = await client.from("gallery").delete().eq("id", id)
   if (error) return { error: error.message }
   return { error: null }
 }

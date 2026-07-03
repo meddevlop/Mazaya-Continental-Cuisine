@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { createServerClient } from "@/lib/supabase"
 
 export interface MenuItemData {
   id: string
@@ -36,8 +36,10 @@ function mapRow(row: any): MenuItemData {
   }
 }
 
+const db = () => createServerClient()
+
 export async function getMenuItems() {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("menu_items")
     .select("*, category:categories(name)")
     .order("sort_order", { ascending: true })
@@ -46,7 +48,7 @@ export async function getMenuItems() {
 }
 
 export async function getMenuItemsByCategory(categoryId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("menu_items")
     .select("*, category:categories(name)")
     .eq("category_id", categoryId)
@@ -56,7 +58,7 @@ export async function getMenuItemsByCategory(categoryId: string) {
 }
 
 export async function getPopularItems() {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("menu_items")
     .select("*, category:categories(name)")
     .eq("is_popular", true)
@@ -67,7 +69,7 @@ export async function getPopularItems() {
 }
 
 export async function createMenuItem(item: Record<string, any>) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("menu_items")
     .insert([item])
     .select("*, category:categories(name)")
@@ -77,7 +79,7 @@ export async function createMenuItem(item: Record<string, any>) {
 }
 
 export async function updateMenuItem(id: string, updates: Record<string, any>) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("menu_items")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", id)
@@ -88,7 +90,7 @@ export async function updateMenuItem(id: string, updates: Record<string, any>) {
 }
 
 export async function deleteMenuItem(id: string) {
-  const { error } = await supabase.from("menu_items").delete().eq("id", id)
+  const { error } = await db().from("menu_items").delete().eq("id", id)
   if (error) return { error: error.message }
   return { error: null }
 }

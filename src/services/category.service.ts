@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { createServerClient } from "@/lib/supabase"
 
 export interface CategoryData {
   id: string
@@ -25,8 +25,10 @@ function mapRow(row: any): CategoryData {
   }
 }
 
+const db = () => createServerClient()
+
 export async function getCategories() {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("categories")
     .select("*, menu_items:menu_items(count)")
     .order("order_index", { ascending: true })
@@ -39,7 +41,7 @@ export async function getCategories() {
 }
 
 export async function getActiveCategories() {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("categories")
     .select("*")
     .eq("is_active", true)
@@ -49,7 +51,7 @@ export async function getActiveCategories() {
 }
 
 export async function createCategory(category: Record<string, any>) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("categories")
     .insert([category])
     .select()
@@ -59,7 +61,7 @@ export async function createCategory(category: Record<string, any>) {
 }
 
 export async function updateCategory(id: string, updates: Record<string, any>) {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("categories")
     .update(updates)
     .eq("id", id)
@@ -70,14 +72,14 @@ export async function updateCategory(id: string, updates: Record<string, any>) {
 }
 
 export async function deleteCategory(id: string) {
-  const { error } = await supabase.from("categories").delete().eq("id", id)
+  const { error } = await db().from("categories").delete().eq("id", id)
   if (error) return { error: error.message }
   return { error: null }
 }
 
 export async function reorderCategories(ids: string[]) {
   const updates = ids.map((id, idx) =>
-    supabase.from("categories").update({ order_index: idx }).eq("id", id)
+    db().from("categories").update({ order_index: idx }).eq("id", id)
   )
   const results = await Promise.all(updates)
   const error = results.find(r => r.error)?.error
