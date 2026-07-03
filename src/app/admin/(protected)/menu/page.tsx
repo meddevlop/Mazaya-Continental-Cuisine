@@ -102,7 +102,7 @@ export default function MenuPage() {
 
   return (
     <>
-      <PageHeader title="Menu Items" description="Manage your restaurant menu — 70+ items across 13 categories"
+      <PageHeader title={`Menu Items (${items.length})`} description={`Manage your restaurant menu — ${items.length} items across ${categories.length} categories`}
         action={
           <button onClick={() => { setEditingId(null); setForm(emptyForm); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#C8A45C] text-[#1A1A1A] text-sm font-semibold hover:bg-[#B8933D] transition-colors">
             <Plus size={16} /> Add Menu Item
@@ -127,9 +127,12 @@ export default function MenuPage() {
               <div className="flex flex-col gap-1.5">
                 <span className="text-[10px] text-[#6B5E56] font-medium uppercase tracking-wider">Category</span>
                 <div className="flex gap-1.5 flex-wrap">
-                  {[{ id: "all", name: "All" }, ...categories].map(c => (
-                    <button key={c.id} onClick={() => { setCategoryFilter(c.id); setPage(1) }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${categoryFilter === c.id ? "bg-[#C8A45C] text-[#1A1A1A]" : "bg-white/5 text-[#6B5E56] hover:bg-white/10"}`}>{c.name}</button>
-                  ))}
+                  {[{ id: "all", name: "All" }, ...categories].map(c => {
+                    const count = c.id === "all" ? items.length : items.filter(i => i.category_id === c.id).length
+                    return (
+                      <button key={c.id} onClick={() => { setCategoryFilter(c.id); setPage(1) }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${categoryFilter === c.id ? "bg-[#C8A45C] text-[#1A1A1A]" : "bg-white/5 text-[#6B5E56] hover:bg-white/10"}`}>{c.name} ({count})</button>
+                    )
+                  })}
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">
