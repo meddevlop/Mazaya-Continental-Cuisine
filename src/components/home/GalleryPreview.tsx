@@ -20,6 +20,21 @@ export default function GalleryPreview({ images }: GalleryPreviewProps) {
           subtitle="A visual journey through our culinary creations"
         />
 
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+          {images.slice(0, 6).map((img, index) => (
+            <motion.div
+              key={img.url + index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.08 }}
+              className="relative aspect-square overflow-hidden rounded-xl bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D] border border-white/[0.06]"
+            >
+              <img src={img.url} alt={img.alt || "Gallery"} className="w-full h-full object-cover" loading="lazy" />
+            </motion.div>
+          ))}
+        </div>
+
         {images.length > 0 && (
           <motion.div
             className="text-center mt-12"
@@ -36,21 +51,6 @@ export default function GalleryPreview({ images }: GalleryPreviewProps) {
             </Link>
           </motion.div>
         )}
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {images.slice(0, 6).map((img, index) => (
-            <motion.div
-              key={img.url + index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.08 }}
-              className="relative aspect-square overflow-hidden rounded-xl bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D] border border-white/[0.06] flex items-center justify-center p-4"
-            >
-              <p className="text-[#C8A45C] text-xs text-center">{img.alt || "Gallery"}</p>
-            </motion.div>
-          ))}
-        </div>
 
         {images.length === 0 && (
           <p className="text-center text-[#6B5E56]">Gallery coming soon.</p>
