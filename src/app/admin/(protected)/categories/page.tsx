@@ -25,7 +25,7 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true); const [error, setError] = useState("")
   const [showForm, setShowForm] = useState(false); const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", name_ar: "", slug: "", color: "#C8A45C", icon: defaultIcon, sort_order: "0", is_active: true })
-  const [saving, setSaving] = useState(false); const [deleteTarget, setDeleteTarget] = useState<Category | null>(null); const [deleting, setDeleting] = useState(false)
+  const [saving, setSaving] = useState(false); const [validation, setValidation] = useState<Record<string, string>>({}); const [deleteTarget, setDeleteTarget] = useState<Category | null>(null); const [deleting, setDeleting] = useState(false)
   const [dragIdx, setDragIdx] = useState<number | null>(null)
   const dragOverIdx = useRef<number | null>(null)
 
@@ -43,15 +43,23 @@ export default function CategoriesPage() {
 
   const generateSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
 
+  const validate = () => {
+    const errs: Record<string, string> = {}
+    if (!form.name.trim()) errs.name = "Name is required"
+    if (!form.slug.trim()) errs.slug = "Slug is required"
+    setValidation(errs)
+    return Object.keys(errs).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setSaving(true)
+    e.preventDefault(); if (!validate()) return; setSaving(true)
     const body = { ...form, sort_order: parseInt(form.sort_order) || 0 }
     try {
       const res = await fetch(`/admin/api/categories${editingId ? `/${editingId}` : ""}`, {
         method: editingId ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
       })
       if (!res.ok) throw new Error()
-      setShowForm(false); setEditingId(null); setForm({ name: "", name_ar: "", slug: "", color: "#C8A45C", icon: defaultIcon, sort_order: "0", is_active: true }); fetchData()
+      setShowForm(false); setEditingId(null); setForm({ name: "", name_ar: "", slug: "", color: "#C8A45C", icon: defaultIcon, sort_order: "0", is_active: true }); setValidation({}); fetchData()
     } catch { toast("error", "Failed to save category") }
     finally { setSaving(false) }
   }
@@ -104,13 +112,13 @@ export default function CategoriesPage() {
         }
       />
 
-      <Modal open={showForm} onClose={() => setShowForm(false)} title={editingId ? "Edit Category" : "New Category"}>
+      <Modal open={showForm} onClose={() => { setShowForm(false); setValidation({}) }} title={editingId ? "Edit Category" : "New Category"}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Name (EN)" value={form.name} onChange={v => setForm({ ...form, name: v, slug: editingId ? form.slug : generateSlug(v) })} required />
+            <FormField label="Name (EN)" value={form.name} onChange={v => setForm({ ...form, name: v, slug: editingId ? form.slug : generateSlug(v) })} required error={validation.name} />
             <FormField label="Name (AR)" value={form.name_ar} onChange={v => setForm({ ...form, name_ar: v })} required dir="rtl" />
           </div>
-          <FormField label="Slug" value={form.slug} onChange={v => setForm({ ...form, slug: v })} required />
+          <FormField label="Slug" value={form.slug} onChange={v => setForm({ ...form, slug: v })} required error={validation.slug} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ColorPicker label="Color" value={form.color} onChange={v => setForm({ ...form, color: v })} />
             <FormField label="Sort Order" value={form.sort_order} onChange={v => setForm({ ...form, sort_order: v })} type="number" />
