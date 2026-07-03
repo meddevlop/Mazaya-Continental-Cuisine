@@ -9,5 +9,7 @@ export async function GET() {
   const dbIds = new Set((data || []).map((i: any) => i.id))
   const merged = [...(data || []), ...memCats.filter(c => !dbIds.has(c.id))]
   const active = merged.filter((i: any) => i.is_active !== false)
-  return NextResponse.json(active)
+  return NextResponse.json(active, {
+    headers: { "Cache-Control": "public, max-age=0, s-maxage=0, must-revalidate" },
+  })
 }

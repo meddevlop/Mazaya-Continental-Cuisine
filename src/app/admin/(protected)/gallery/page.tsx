@@ -29,7 +29,7 @@ export default function GalleryPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true)
-    try { const res = await fetch("/admin/api/gallery"); if (!res.ok) throw new Error(); setItems(await res.json()) }
+    try { const res = await fetch(`/admin/api/gallery?t=${Date.now()}`); if (!res.ok) throw new Error(); setItems(await res.json()) }
     catch { setError("Failed to load gallery") }
     finally { setLoading(false) }
   }, [])

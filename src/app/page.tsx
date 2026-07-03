@@ -57,7 +57,7 @@ export default function HomePage() {
         const [settingsRes, menuRes, galleryRes] = await Promise.all([
           fetch("/api/settings"),
           fetch("/api/menu"),
-          fetch("/api/gallery"),
+          fetch(`/api/gallery?t=${Date.now()}`),
         ])
 
         const settings = settingsRes.ok ? await settingsRes.json() : {}

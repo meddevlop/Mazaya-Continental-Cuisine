@@ -8,7 +8,9 @@ export async function GET() {
   const memCats = Object.values(inMemoryGallery).filter(c => !c._deleted)
   const dbIds = new Set((data || []).map((i: any) => i.id))
   const merged = [...(data || []), ...memCats.filter(c => !dbIds.has(c.id))]
-  return NextResponse.json(merged)
+  return NextResponse.json(merged, {
+    headers: { "Cache-Control": "public, max-age=0, s-maxage=0, must-revalidate" },
+  })
 }
 
 export async function POST(request: Request) {

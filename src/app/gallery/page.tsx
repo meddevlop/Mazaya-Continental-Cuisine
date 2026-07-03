@@ -17,7 +17,7 @@ export default function GalleryPage() {
     fetch("/api/settings").then(r => r.json()).then(data => {
       if (data.restaurant_name_ar) setSettings({ nameAr: data.restaurant_name_ar })
     }).catch(() => {})
-    fetch("/api/gallery").then(r => r.json()).then(data => {
+    fetch(`/api/gallery?t=${Date.now()}`).then(r => r.json()).then(data => {
       if (Array.isArray(data)) setImages(data)
     }).catch(() => {})
   }, [])
