@@ -25,6 +25,7 @@ interface HomeData {
   description: string
   storyImage: string
   featuredDishes: DishData[]
+  galleryImages: { url: string; alt: string }[]
   instagram: string
   phone: string
   rating: number
@@ -39,6 +40,7 @@ const fallback: HomeData = {
   description: "",
   storyImage: "",
   featuredDishes: [],
+  galleryImages: [],
   instagram: "mazaya.cuisine",
   phone: "",
   rating: 4.9,
@@ -52,13 +54,15 @@ export default function HomePage() {
     let cancelled = false
     async function load() {
       try {
-        const [settingsRes, menuRes] = await Promise.all([
+        const [settingsRes, menuRes, galleryRes] = await Promise.all([
           fetch("/api/settings"),
           fetch("/api/menu"),
+          fetch("/api/gallery"),
         ])
 
         const settings = settingsRes.ok ? await settingsRes.json() : {}
         const menuItems = menuRes.ok ? await menuRes.json() : []
+        const galleryItems = galleryRes.ok ? await galleryRes.json() : []
 
         if (cancelled) return
         setData({
@@ -81,6 +85,10 @@ export default function HomePage() {
                 name: i.name,
                 description: i.description || "",
               })),
+          galleryImages: (galleryItems as any[])
+            .filter((item: any) => item.is_active !== false)
+            .slice(0, 6)
+            .map((item: any) => ({ url: item.url, alt: item.alt || "" })),
           instagram: settings.instagram?.replace(/https:\/\/instagram\.com\//, "").replace(/^@/, "") || fallback.instagram,
           phone: settings.phone || "",
           rating: settings.rating ?? fallback.rating,
@@ -109,7 +117,7 @@ export default function HomePage() {
       />
       <FeaturedDishes dishes={data.featuredDishes} />
       <AboutSection image={data.storyImage} description={data.description} />
-      <GalleryPreview />
+      <GalleryPreview images={data.galleryImages} />
       <InstagramFeed instagram={data.instagram} />
       <SignUpCTA />
       <ReservationCTA heroImage={data.heroImage} phone={data.phone} />

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { motion } from "framer-motion"
-import { Plus, Trash2, Loader2, Image, Search, Upload, Edit3, X, Check, Library } from "lucide-react"
+import { Plus, Trash2, Loader2, Image, Search, Upload, Edit3, X, Check, Library, Eye, EyeOff } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
 import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
@@ -162,6 +162,7 @@ export default function GalleryPage() {
               <motion.div key={item.id} layout className="group relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-[#111] to-[#0D0D0D] border border-white/[0.06]">
                 <img src={item.url} alt={item.alt} className="w-full h-full object-cover" loading="lazy" />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <button onClick={async () => { await fetch(`/admin/api/gallery/${item.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ is_active: !item.is_active }) }); fetchData() }} className={`p-2 rounded-lg transition-colors ${item.is_active ? "bg-green-500/20 hover:bg-green-500/40 text-green-400" : "bg-white/10 hover:bg-white/20 text-white"}`}>{item.is_active ? <Eye size={16} /> : <EyeOff size={16} />}</button>
                   <button onClick={() => handleEdit(item)} className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"><Edit3 size={16} /></button>
                   <button onClick={() => setDeleteTarget(item)} className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-colors"><Trash2 size={16} /></button>
                 </div>
