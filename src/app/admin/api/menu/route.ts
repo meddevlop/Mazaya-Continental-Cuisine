@@ -4,8 +4,8 @@ import { menuCategories } from "@/data/menu"
 
 export async function GET() {
   const { data, error } = await getMenuItems()
-  if (data && data.length > 0) return NextResponse.json(data)
   if (error) console.error("Menu API error:", error)
+  const dbIds = new Set((data || []).map(i => i.id))
   const fallback = menuCategories.flatMap(c =>
     c.items.map(i => ({
       id: `${c.id}-${i.name.toLowerCase().replace(/\s+/g, "-")}`,
@@ -13,8 +13,8 @@ export async function GET() {
       price: i.price, category_id: c.id, category_name: c.name,
       is_featured: false, is_available: true, sort_order: 0, is_popular: i.isBestSeller || false,
     }))
-  )
-  return NextResponse.json(fallback)
+  ).filter(i => !dbIds.has(i.id))
+  return NextResponse.json([...(data || []), ...fallback])
 }
 
 export async function POST(request: Request) {

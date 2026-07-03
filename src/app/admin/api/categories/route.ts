@@ -5,14 +5,18 @@ import { inMemoryCategories } from "@/services/memory-store"
 
 export async function GET() {
   const { data, error } = await getCategories()
-  if (data && data.length > 0) return NextResponse.json(data)
   if (error) console.error("Categories API error:", error)
   const memCats = Object.values(inMemoryCategories).filter(c => !c._deleted)
-  const fallback = [...menuCategories.map(c => ({
-    id: c.id, name: c.name, name_ar: c.nameAr,
-    item_count: c.items.length,
-  })), ...memCats]
-  return NextResponse.json(fallback)
+  const dbIds = new Set((data || []).map(c => c.id))
+  const merged = [
+    ...menuCategories.filter(c => !dbIds.has(c.id)).map(c => ({
+      id: c.id, name: c.name, name_ar: c.nameAr,
+      item_count: c.items.length,
+    })),
+    ...(data || []),
+    ...memCats.filter(c => !dbIds.has(c.id)),
+  ]
+  return NextResponse.json(merged)
 }
 
 export async function POST(request: Request) {
