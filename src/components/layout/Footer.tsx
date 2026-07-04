@@ -158,7 +158,7 @@ export default function Footer() {
               <h4 className="font-bold text-xs uppercase tracking-[0.25em] mb-4 text-[#C8A45C]">Follow Us</h4>
               <div className="flex gap-3">
                 {[
-                  { icon: Camera, href: `https://instagram.com/${settings.instagram}`, label: "Instagram" },
+                  { icon: Camera, href: "https://www.instagram.com/mazaya.cuisine?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", label: "Instagram" },
                 ].map((social) => (
                   <a
                     key={social.label}
