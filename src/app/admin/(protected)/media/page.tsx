@@ -61,7 +61,7 @@ export default function MediaPage() {
     try {
       const fd = new FormData()
       fd.append("file", file)
-      fd.append("folder", activeFolder || "Other")
+      fd.append("folder", activeFolder || "Uploads")
       const timer = setInterval(() => setProgress(p => Math.min(p + 20, 90)), 300)
       const res = await fetch("/admin/api/media", { method: "POST", body: fd })
       clearInterval(timer); setProgress(100)

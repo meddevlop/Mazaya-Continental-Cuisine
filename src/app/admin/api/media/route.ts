@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const fd = await request.formData()
   const file = fd.get("file") as File | null
-  const folder = (fd.get("folder") as string) || "Other"
+  const folder = (fd.get("folder") as string) || "Uploads"
   if (!file) return NextResponse.json({ error: "file required" }, { status: 400 })
   const { data, error } = await uploadMediaItem(file, folder)
   if (error) return NextResponse.json({ error }, { status: 500 })
@@ -41,7 +41,7 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url)
   const name = searchParams.get("name")
-  const folder = searchParams.get("folder") || "Other"
+  const folder = searchParams.get("folder") || "Uploads"
   if (!name) return NextResponse.json({ error: "name required" }, { status: 400 })
   const { error } = await deleteMediaItem(name, folder)
   if (error) return NextResponse.json({ error }, { status: 500 })

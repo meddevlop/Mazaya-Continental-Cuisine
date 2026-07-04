@@ -20,16 +20,7 @@ export interface MediaFolder {
 }
 
 const FOLDER_MAP: { name: string; bucket: keyof typeof STORAGE_BUCKETS; path: string }[] = [
-  { name: "Hero Images", bucket: "HERO", path: "/hero" },
-  { name: "Gallery Images", bucket: "GALLERY", path: "/gallery" },
-  { name: "Menu Images", bucket: "MENU", path: "/menu" },
-  { name: "Story Images", bucket: "STORY", path: "/story" },
-  { name: "Full House Images", bucket: "FULL_HOUSE", path: "/full-house" },
-  { name: "Featured Dish Images", bucket: "FEATURED", path: "/featured" },
-  { name: "Dish Images", bucket: "MENU", path: "/menu" },
-  { name: "Logo", bucket: "LOGO", path: "/logo" },
-  { name: "Icons", bucket: "ICONS", path: "/icons" },
-  { name: "Other", bucket: "GALLERY", path: "/other" },
+  { name: "Uploads", bucket: "GALLERY", path: "/uploads" },
 ]
 
 export async function getMediaItems(folder?: string) {
