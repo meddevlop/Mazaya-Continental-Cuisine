@@ -1,4 +1,4 @@
-import { supabase, STORAGE_BUCKETS } from "@/lib/supabase"
+import { createServerClient, STORAGE_BUCKETS } from "@/lib/supabase"
 
 export interface MediaItem {
   id: string
@@ -25,17 +25,20 @@ const FOLDER_MAP: { name: string; bucket: keyof typeof STORAGE_BUCKETS; path: st
   { name: "Our Story", bucket: "STORY", path: "/story" },
 ]
 
+const db = () => createServerClient()
+
 export async function getMediaItems(folder?: string) {
   const bucket = FOLDER_MAP.find(f => f.name === folder)?.bucket || "GALLERY"
   try {
-    const { data, error } = await supabase.storage.from(STORAGE_BUCKETS[bucket]).list()
+    const client = db()
+    const { data, error } = await client.storage.from(STORAGE_BUCKETS[bucket]).list()
     if (error) return { data: [], error: null }
 
     const folderEntry = FOLDER_MAP.find(f => f.bucket === bucket)
     const folderName = folderEntry?.name || bucket
     const items: MediaItem[] = (data || []).map((file: any, i: number) => ({
       id: `media_${bucket}_${i}`,
-      url: supabase.storage.from(STORAGE_BUCKETS[bucket]).getPublicUrl(file.name).data.publicUrl,
+      url: client.storage.from(STORAGE_BUCKETS[bucket]).getPublicUrl(file.name).data.publicUrl,
       name: file.name,
       size: file.metadata?.size || 0,
       type: file.metadata?.mimetype || "image/jpeg",
@@ -52,9 +55,10 @@ export async function getMediaItems(folder?: string) {
 }
 
 export async function getMediaFolders() {
+  const client = db()
   const folders: MediaFolder[] = await Promise.all(
     FOLDER_MAP.map(async (f) => {
-      const { data } = await supabase.storage.from(STORAGE_BUCKETS[f.bucket]).list()
+      const { data } = await client.storage.from(STORAGE_BUCKETS[f.bucket]).list()
       let count = data?.length || 0
       return {
         id: `folder_${f.name.toLowerCase().replace(/\s+/g, "_")}`,
@@ -70,10 +74,11 @@ export async function getMediaFolders() {
 export async function uploadMediaItem(file: File, folder: string) {
   const bucket = FOLDER_MAP.find(f => f.name === folder)?.bucket || "GALLERY"
   try {
+    const client = db()
     const fileName = `${Date.now()}_${file.name}`
-    const { data, error } = await supabase.storage.from(STORAGE_BUCKETS[bucket]).upload(fileName, file)
+    const { data, error } = await client.storage.from(STORAGE_BUCKETS[bucket]).upload(fileName, file)
     if (error) return { data: null, error: error.message }
-    const { data: { publicUrl } } = supabase.storage.from(STORAGE_BUCKETS[bucket]).getPublicUrl(fileName)
+    const { data: { publicUrl } } = client.storage.from(STORAGE_BUCKETS[bucket]).getPublicUrl(fileName)
     return { data: { ...data, url: publicUrl }, error: null }
   } catch (e) {
     return { data: null, error: e instanceof Error ? e.message : "Upload failed" }
@@ -87,7 +92,7 @@ export async function renameMediaItem(id: string, name: string) {
 export async function deleteMediaItem(fileName: string, folder: string) {
   const bucket = FOLDER_MAP.find(f => f.name === folder)?.bucket || "GALLERY"
   if (!fileName) return { error: "Invalid file name" }
-  const { error } = await supabase.storage.from(STORAGE_BUCKETS[bucket]).remove([fileName])
+  const { error } = await db().storage.from(STORAGE_BUCKETS[bucket]).remove([fileName])
   if (error) return { error: error.message }
   return { error: null }
 }
