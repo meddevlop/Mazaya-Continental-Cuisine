@@ -21,6 +21,8 @@ export interface MediaFolder {
 
 const FOLDER_MAP: { name: string; bucket: keyof typeof STORAGE_BUCKETS; path: string }[] = [
   { name: "Uploads", bucket: "GALLERY", path: "/uploads" },
+  { name: "Featured Dishes", bucket: "FEATURED", path: "/featured" },
+  { name: "Our Story", bucket: "STORY", path: "/story" },
 ]
 
 export async function getMediaItems(folder?: string) {
