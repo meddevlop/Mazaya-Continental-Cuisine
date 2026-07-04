@@ -1,4 +1,4 @@
-import { supabase, createServerClient } from "@/lib/supabase"
+import { createServerClient } from "@/lib/supabase"
 
 export interface SettingsData {
   id?: string
@@ -81,33 +81,32 @@ function mapRow(row: any): SettingsData {
   }
 }
 
-function ensureSettingsRow() {
-  return supabase.rpc("ensure_settings_row")
-}
+const db = () => createServerClient()
 
 export async function getSettings() {
-  const { data, error } = await supabase.from("settings").select("*").single()
-  if (error && error.message.includes("not found")) {
-    await supabase.from("settings").insert({}).select().single()
-    const { data: retry, error: retryErr } = await supabase.from("settings").select("*").single()
+  const client = db()
+  const { data, error } = await client.from("settings").select("*").single()
+  if (error && (error.message || "").includes("not found")) {
+    await client.from("settings").insert({}).select().single()
+    const { data: retry, error: retryErr } = await client.from("settings").select("*").single()
     if (retryErr) return { data: null, error: retryErr.message }
     return { data: mapRow(retry || {}), error: null }
   }
   if (error) return { data: null, error: error.message }
   if (!data) {
-    const { data: inserted } = await supabase.from("settings").insert({}).select().single()
+    const { data: inserted } = await client.from("settings").insert({}).select().single()
     return { data: mapRow(inserted || {}), error: null }
   }
   return { data: mapRow(data), error: null }
 }
 
 export async function updateSettings(settings: Partial<SettingsData>) {
-  const client = createServerClient()
-  const { data: existing } = await supabase.from("settings").select("id").single()
+  const client = db()
+  const { data: existing } = await client.from("settings").select("id").single()
   let id = existing?.id
 
   if (!id) {
-    const { data: inserted } = await supabase.from("settings").insert({}).select("id").single()
+    const { data: inserted } = await client.from("settings").insert({}).select("id").single()
     id = inserted?.id
   }
 

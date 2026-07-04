@@ -23,6 +23,7 @@ interface HomeData {
   tagline: string
   description: string
   storyImage: string
+  featuredImage: string
   featuredDishes: DishData[]
   galleryImages: { url: string; alt: string }[]
   instagram: string
@@ -38,6 +39,7 @@ const fallback: HomeData = {
   tagline: "Continental Dining Experience in Dubai",
   description: "",
   storyImage: "",
+  featuredImage: "",
   featuredDishes: [],
   galleryImages: [],
   instagram: "mazaya.cuisine",
@@ -72,6 +74,7 @@ export default function HomePage() {
           tagline: settings.tagline || fallback.tagline,
           description: settings.description || "",
           storyImage: settings.story_image || "",
+          featuredImage: settings.featured_dish_image || "",
           featuredDishes: (menuItems as any[]).some((item: any) => item.is_featured)
             ? (menuItems as any[])
                 .filter((item: any) => item.is_featured)
@@ -114,7 +117,7 @@ export default function HomePage() {
         tagline={data.tagline}
         rating={data.rating}
       />
-      <FeaturedDishes dishes={data.featuredDishes} />
+      <FeaturedDishes dishes={data.featuredDishes} featuredImage={data.featuredImage} />
       <AboutSection image={data.storyImage} description={data.description} />
       <GalleryPreview images={data.galleryImages} />
       <SignUpCTA />

@@ -10,6 +10,7 @@ interface DishData {
 
 interface FeaturedDishesProps {
   dishes: DishData[]
+  featuredImage?: string
 }
 
 const itemVariants = {
@@ -20,7 +21,7 @@ const itemVariants = {
   }),
 }
 
-export default function FeaturedDishes({ dishes }: FeaturedDishesProps) {
+export default function FeaturedDishes({ dishes, featuredImage }: FeaturedDishesProps) {
   const items = dishes.length > 0 ? dishes : [
     { name: "Featured Dish", description: "Coming soon" },
     { name: "Featured Dish", description: "Coming soon" },
@@ -29,8 +30,13 @@ export default function FeaturedDishes({ dishes }: FeaturedDishesProps) {
   ]
 
   return (
-    <section className="py-24 md:py-32 bg-[#FAFAF8] relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-white to-transparent pointer-events-none" />
+    <section className="py-24 md:py-32 bg-[#FAFAF8] relative overflow-hidden">
+      {featuredImage && (
+        <div className="absolute inset-0">
+          <img src={featuredImage} alt="" className="w-full h-full object-cover opacity-[0.03]" />
+        </div>
+      )}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-transparent pointer-events-none" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle
           title="Featured Dishes"
