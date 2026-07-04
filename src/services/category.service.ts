@@ -30,12 +30,12 @@ const db = () => createServerClient()
 export async function getCategories() {
   const { data, error } = await db()
     .from("categories")
-    .select("*, menu_items:menu_items(count)")
+    .select("*")
     .order("order_index", { ascending: true })
   if (error) return { data: null, error: error.message }
   const mapped = (data || []).map((row: any) => ({
     ...mapRow(row),
-    item_count: row.menu_items?.[0]?.count ?? 0,
+    item_count: 0,
   }))
   return { data: mapped, error: null }
 }

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Edit3, Trash2, Loader2, FolderTree, GripVertical, Eye, EyeOff, Palette } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { Modal, ConfirmDialog, ColorPicker, useToast } from "@/components/admin/ui"
 import { FormField, ToggleField } from "@/components/admin/ui/FormField"
@@ -22,7 +21,7 @@ const defaultIcon = "FolderTree"
 export default function CategoriesPage() {
   const { toast } = useToast()
   const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [showForm, setShowForm] = useState(false); const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", name_ar: "", slug: "", color: "#C8A45C", icon: defaultIcon, sort_order: "0", is_active: true })
   const [saving, setSaving] = useState(false); const [validation, setValidation] = useState<Record<string, string>>({}); const [deleteTarget, setDeleteTarget] = useState<Category | null>(null); const [deleting, setDeleting] = useState(false)
@@ -30,13 +29,11 @@ export default function CategoriesPage() {
   const dragOverIdx = useRef<number | null>(null)
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
       const res = await fetch("/admin/api/categories")
       if (!res.ok) throw new Error()
       setCategories(await res.json())
     } catch { setError("Failed to load categories") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -144,7 +141,7 @@ export default function CategoriesPage() {
 
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} title="Delete Category" message={`Delete "${deleteTarget?.name}"? Items in this category will remain but will be uncategorized.`} loading={deleting} />
 
-      {loading ? <LoadingSkeleton className="h-48" /> : sorted.length === 0 ? (
+      {sorted.length === 0 ? (
         <EmptyState icon={<FolderTree size={28} />} title="No categories" description="Create your first menu category" />
       ) : (
         <div className="space-y-2">

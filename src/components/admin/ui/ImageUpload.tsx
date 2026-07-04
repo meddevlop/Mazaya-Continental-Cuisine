@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Upload, Image as ImageIcon, X, Loader2, Library } from "lucide-react"
 import ImagePicker from "./ImagePicker"
 
@@ -29,6 +29,10 @@ export default function ImageUpload({ currentUrl, onUpload, onRemove, label = "U
   const [error, setError] = useState("")
   const [pickerOpen, setPickerOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setPreview(currentUrl || null)
+  }, [currentUrl])
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

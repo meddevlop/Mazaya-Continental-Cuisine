@@ -7,12 +7,10 @@ import MenuNavigation from "@/components/menu/MenuNavigation"
 import MenuCategory from "@/components/menu/MenuCategory"
 import AnimatedSection from "@/components/ui/AnimatedSection"
 import { business } from "@/data/business"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import type { MenuCategory as MenuCategoryType } from "@/types"
 
 export default function MenuPageClient() {
   const [categories, setCategories] = useState<MenuCategoryType[]>(hardcodedCategories)
-  const [loading, setLoading] = useState(true)
   const [nameAr, setNameAr] = useState(business.nameAr)
 
   useEffect(() => {
@@ -51,21 +49,9 @@ export default function MenuPageClient() {
           if (grouped.length > 0) setCategories(grouped)
         }
       } catch { /* fallback to hardcoded */ }
-      finally { setLoading(false) }
     }
     fetchData()
   }, [])
-
-  if (loading) {
-    return (
-      <div className="bg-[#FAFAF8] min-h-screen">
-        <section className="relative pt-28 pb-12 md:pt-36 md:pb-16 bg-[#111111]" />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <LoadingSkeleton className="h-96" />
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="bg-[#FAFAF8] min-h-screen">

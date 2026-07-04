@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { TrendingUp, Users, CalendarCheck, DollarSign, Star, ArrowUp, ArrowDown } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 
 interface AnalyticsOverview {
@@ -18,10 +17,9 @@ interface AnalyticsOverview {
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsOverview | null>(null)
   const [currency, setCurrency] = useState("AED")
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
       const [analyticsRes, settingsRes] = await Promise.all([
         fetch("/admin/api/analytics"),
@@ -34,27 +32,25 @@ export default function AnalyticsPage() {
         if (s.currency) setCurrency(s.currency)
       }
     } catch { setError("Failed to load analytics") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
   if (error) return <ErrorState message={error} onRetry={fetchData} />
-  if (loading || !data) return <LoadingSkeleton className="h-96" />
-
-  const maxRev = Math.max(...data.revenue_by_month.map(r => r.amount))
-  const maxRes = Math.max(...data.reservations_by_day.map(r => r.count))
-  const maxSource = Math.max(...data.visitors_by_source.map(s => s.count))
+  const safe: AnalyticsOverview = data || { total_reservations: 0, total_guests: 0, total_revenue: 0, average_rating: 0, monthly_growth: 0, popular_dishes: [], reservations_by_day: [], revenue_by_month: [], visitors_by_source: [] }
+  const maxRev = safe.revenue_by_month.length ? Math.max(...safe.revenue_by_month.map(r => r.amount)) : 1
+  const maxRes = safe.reservations_by_day.length ? Math.max(...safe.reservations_by_day.map(r => r.count)) : 1
+  const maxSource = safe.visitors_by_source.length ? Math.max(...safe.visitors_by_source.map(s => s.count)) : 1
 
   return (
     <>
       <PageHeader title="Analytics" description="Business performance overview" />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={<CalendarCheck size={20} />} label="Total Reservations" value={data.total_reservations.toLocaleString()} growth="+12.5%" positive />
-        <StatCard icon={<Users size={20} />} label="Total Guests" value={data.total_guests.toLocaleString()} growth="+8.3%" positive />
-        <StatCard icon={<DollarSign size={20} />} label="Total Revenue" value={`${currency} ${data.total_revenue.toLocaleString()}`} growth="+15.2%" positive />
-        <StatCard icon={<Star size={20} />} label="Avg Rating" value={data.average_rating.toString()} growth="4.9 ★" positive />
+        <StatCard icon={<CalendarCheck size={20} />} label="Total Reservations" value={safe.total_reservations.toLocaleString()} growth="+12.5%" positive />
+        <StatCard icon={<Users size={20} />} label="Total Guests" value={safe.total_guests.toLocaleString()} growth="+8.3%" positive />
+        <StatCard icon={<DollarSign size={20} />} label="Total Revenue" value={`${currency} ${safe.total_revenue.toLocaleString()}`} growth="+15.2%" positive />
+        <StatCard icon={<Star size={20} />} label="Avg Rating" value={safe.average_rating.toString()} growth="4.9 ★" positive />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -64,7 +60,7 @@ export default function AnalyticsPage() {
             <span className="text-[10px] text-[#6B5E56]">Last 12 months</span>
           </div>
           <div className="flex items-end gap-1.5 h-40">
-            {data.revenue_by_month.map((r, i) => (
+            {safe.revenue_by_month.map((r, i) => (
               <div key={r.month} className="flex-1 flex flex-col items-center gap-1">
                 <motion.div
                   initial={{ height: 0 }} animate={{ height: `${(r.amount / maxRev) * 100}%` }}
@@ -84,8 +80,8 @@ export default function AnalyticsPage() {
             <span className="text-[10px] text-[#6B5E56]">Top 5</span>
           </div>
           <div className="space-y-3">
-            {data.popular_dishes.map((dish, i) => {
-              const pct = (dish.count / data.popular_dishes[0].count) * 100
+            {safe.popular_dishes.map((dish, i) => {
+              const pct = (dish.count / safe.popular_dishes[0].count) * 100
               return (
                 <div key={dish.name}>
                   <div className="flex items-center justify-between text-sm mb-1">
@@ -108,7 +104,7 @@ export default function AnalyticsPage() {
             <h3 className="text-sm font-semibold text-[#F5F0EB]">Daily Reservations (14 days)</h3>
           </div>
           <div className="flex items-end gap-1 h-32">
-            {data.reservations_by_day.map((d, i) => (
+            {safe.reservations_by_day.map((d, i) => (
               <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
                 <motion.div
                   initial={{ height: 0 }} animate={{ height: `${(d.count / maxRes) * 100}%` }}
@@ -127,7 +123,7 @@ export default function AnalyticsPage() {
             <h3 className="text-sm font-semibold text-[#F5F0EB]">Visitor Sources</h3>
           </div>
           <div className="space-y-3">
-            {data.visitors_by_source.map(source => {
+            {safe.visitors_by_source.map(source => {
               const pct = (source.count / maxSource) * 100
               return (
                 <div key={source.source}>
@@ -148,10 +144,10 @@ export default function AnalyticsPage() {
       <div className="rounded-xl bg-gradient-to-br from-[#111] to-[#0D0D0D] border border-white/[0.06] p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-[#F5F0EB]">Monthly Overview</h3>
-          <span className="flex items-center gap-1 text-xs text-green-400"><ArrowUp size={12} /> {data.monthly_growth}% growth</span>
+          <span className="flex items-center gap-1 text-xs text-green-400"><ArrowUp size={12} /> {safe.monthly_growth}% growth</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {data.revenue_by_month.slice(-4).map(r => (
+          {safe.revenue_by_month.slice(-4).map(r => (
             <div key={r.month} className="p-3 rounded-lg bg-white/[0.03]">
               <p className="text-[10px] text-[#6B5E56]">{r.month}</p>
               <p className="text-sm font-semibold text-[#F5F0EB]">{currency} {r.amount.toLocaleString()}</p>

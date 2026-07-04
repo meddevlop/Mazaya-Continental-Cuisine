@@ -1,13 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Bell } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { notificationsData } from "@/data/admin/charts"
+
+interface Notification {
+  id: string; type: string; title: string; description: string; time: string; read: boolean
+}
 
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false)
-  const unread = notificationsData.filter((n) => !n.read).length
+  const [notifications, setNotifications] = useState<Notification[]>([])
+
+  useEffect(() => {
+    fetch("/admin/api/notifications").then(r => r.ok && r.json()).then(d => setNotifications(d)).catch(() => {})
+  }, [])
+
+  const unread = notifications.filter((n) => !n.read).length
 
   return (
     <div className="relative">
@@ -37,26 +46,30 @@ export default function NotificationBell() {
                 <h3 className="text-sm font-semibold text-[#F5F0EB]">Notifications</h3>
               </div>
               <div className="max-h-72 overflow-y-auto">
-                {notificationsData.map((notif) => (
-                  <div
-                    key={notif.id}
-                    className={`p-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors cursor-pointer ${
-                      !notif.read ? "bg-[#C8A45C]/5" : ""
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                        notif.type === "reservation" ? "bg-green-400" :
-                        notif.type === "message" ? "bg-[#C8A45C]" : "bg-blue-400"
-                      }`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[#F5F0EB]">{notif.title}</p>
-                        <p className="text-xs text-[#6B5E56] truncate">{notif.description}</p>
-                        <p className="text-[10px] text-[#6B5E56] mt-0.5">{notif.time}</p>
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-[#6B5E56]">No notifications</div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors cursor-pointer ${
+                        !notif.read ? "bg-[#C8A45C]/5" : ""
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                          notif.type === "reservation" ? "bg-green-400" :
+                          notif.type === "message" ? "bg-[#C8A45C]" : "bg-blue-400"
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-[#F5F0EB]">{notif.title}</p>
+                          <p className="text-xs text-[#6B5E56] truncate">{notif.description}</p>
+                          <p className="text-[10px] text-[#6B5E56] mt-0.5">{notif.time}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </motion.div>
           </>

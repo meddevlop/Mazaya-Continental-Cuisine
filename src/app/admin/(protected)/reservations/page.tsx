@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { CalendarCheck, Search, X, Loader2, ChevronDown, Eye, CalendarDays, Filter } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { Modal, ConfirmDialog, Pagination, Badge, Tabs, useToast } from "@/components/admin/ui"
 
@@ -35,7 +34,7 @@ const tabs = [
 export default function ReservationsPage() {
   const { toast } = useToast()
   const [reservations, setReservations] = useState<Reservation[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [filter, setFilter] = useState<ReservationStatus | "all">("all")
   const [search, setSearch] = useState(""); const [dateFilter, setDateFilter] = useState("")
   const [page, setPage] = useState(1); const pageSize = 10
@@ -45,12 +44,10 @@ export default function ReservationsPage() {
   const [showFilters, setShowFilters] = useState(false)
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
       const url = filter === "all" ? "/admin/api/reservations" : `/admin/api/reservations?status=${filter}`
       const res = await fetch(url); if (!res.ok) throw new Error(); setReservations(await res.json())
     } catch { setError("Failed to load") }
-    finally { setLoading(false) }
   }, [filter])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -139,7 +136,7 @@ export default function ReservationsPage() {
 
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} title="Delete Reservation" message="Are you sure? This action cannot be undone." loading={deleting} />
 
-      {loading ? <LoadingSkeleton className="h-64" /> : paginated.length === 0 ? (
+      {paginated.length === 0 ? (
         <EmptyState icon={<CalendarCheck size={28} />} title="No reservations" description={search || dateFilter ? "No reservations match your filters" : "No reservations yet"} />
       ) : (
         <>

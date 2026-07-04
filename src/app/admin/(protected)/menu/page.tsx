@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Edit3, Trash2, Search, X, Loader2, UtensilsCrossed, Star, Eye, EyeOff, Filter } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { Modal, ConfirmDialog, Pagination, Badge, useToast } from "@/components/admin/ui"
 import { FormField, TextareaField, SelectField, ToggleField } from "@/components/admin/ui/FormField"
@@ -24,7 +23,7 @@ export default function MenuPage() {
   const { toast } = useToast()
   const [items, setItems] = useState<MenuItem[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [search, setSearch] = useState(""); const [categoryFilter, setCategoryFilter] = useState("all"); const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "unavailable">("all")
   const [page, setPage] = useState(1); const pageSize = 10
   const [showForm, setShowForm] = useState(false); const [editingId, setEditingId] = useState<string | null>(null)
@@ -34,13 +33,11 @@ export default function MenuPage() {
   const [validation, setValidation] = useState<Record<string, string>>({})
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
       const [menuRes, catRes] = await Promise.all([fetch("/admin/api/menu"), fetch("/admin/api/categories")])
       if (!menuRes.ok || !catRes.ok) throw new Error()
       setItems(await menuRes.json()); setCategories(await catRes.json())
     } catch { setError("Failed to load menu items") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -180,7 +177,7 @@ export default function MenuPage() {
 
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} title="Delete Menu Item" message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`} loading={deleting} />
 
-      {loading ? <LoadingSkeleton className="h-64" /> : paginated.length === 0 ? (
+      {paginated.length === 0 ? (
         <EmptyState icon={<UtensilsCrossed size={28} />} title="No menu items" description={search || categoryFilter !== "all" ? "No items match your filters" : "Add your first menu item"} />
       ) : (
         <>

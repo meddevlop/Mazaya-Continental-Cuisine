@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { motion } from "framer-motion"
 import SectionTitle from "@/components/ui/SectionTitle"
 import AnimatedSection from "@/components/ui/AnimatedSection"
@@ -23,15 +22,10 @@ export default function AboutSection({ image, description }: AboutSectionProps) 
             <div className="relative">
               <div className="relative aspect-[4/3] overflow-hidden">
                 {image ? (
-                  <Image
+                  <img
                     src={image}
                     alt="Mazaya Continental Cuisine"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none"
-                    }}
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-[#2C2420] to-[#1A1A1A]" />

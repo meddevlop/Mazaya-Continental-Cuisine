@@ -7,25 +7,13 @@ import AnimatedSection from "@/components/ui/AnimatedSection"
 import Button from "@/components/ui/Button"
 
 interface ReservationCTAProps {
-  heroImage: string
   phone: string
 }
 
-export default function ReservationCTA({ heroImage, phone }: ReservationCTAProps) {
+export default function ReservationCTA({ phone }: ReservationCTAProps) {
   return (
     <section className="relative py-28 md:py-36 overflow-hidden">
-      {heroImage ? (
-        <motion.div
-          className="absolute inset-0 bg-cover bg-center bg-fixed"
-          style={{ backgroundImage: `url('${heroImage}')` }}
-          initial={{ scale: 1.1 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 2 }}
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#111111] to-[#0D0D0D]" />
-      )}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#111111] to-[#0D0D0D]" />
       <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" />
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#C8A45C]/[0.03] to-transparent" />
 

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { MessageSquare, Mail, Phone, Trash2, Loader2, Search, ArrowLeft, Archive, ArchiveRestore, Inbox, Filter } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { ConfirmDialog, Badge, Tabs, useToast } from "@/components/admin/ui"
 
@@ -17,19 +16,17 @@ interface Message {
 export default function MessagesPage() {
   const { toast } = useToast()
   const [messages, setMessages] = useState<Message[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [selected, setSelected] = useState<Message | null>(null)
   const [tab, setTab] = useState("all"); const [search, setSearch] = useState("")
   const [deleteTarget, setDeleteTarget] = useState<Message | null>(null); const [deleting, setDeleting] = useState(false)
   const [updating, setUpdating] = useState<string | null>(null)
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
       const res = await fetch("/admin/api/messages")
       if (!res.ok) throw new Error(); setMessages(await res.json())
     } catch { setError("Failed to load") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -95,7 +92,7 @@ export default function MessagesPage() {
 
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} title="Delete Message" message="Are you sure? This action cannot be undone." loading={deleting} />
 
-      {loading ? <LoadingSkeleton className="h-64" /> : filtered.length === 0 ? (
+      {filtered.length === 0 ? (
         <EmptyState icon={<MessageSquare size={28} />} title="No messages" description={search ? "No messages match your search" : "No messages yet"} />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">

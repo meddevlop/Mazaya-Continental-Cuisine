@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase"
+import { supabase, createServerClient } from "@/lib/supabase"
 
 export interface SettingsData {
   id?: string
@@ -35,7 +35,12 @@ export interface SettingsData {
   og_image?: string
   social_links?: Record<string, any>
   story_image?: string
+  about_image?: string
   featured_dish_image?: string
+  featured_dish_1_image?: string
+  featured_dish_2_image?: string
+  featured_dish_3_image?: string
+  featured_dish_4_image?: string
   full_house_image?: string
 }
 
@@ -76,44 +81,45 @@ function mapRow(row: any): SettingsData {
     og_image: row.og_image || "",
     social_links: row.social_links || {},
     story_image: row.story_image || "",
+    about_image: row.about_image || "",
     featured_dish_image: row.featured_dish_image || "",
+    featured_dish_1_image: row.featured_dish_1_image || "",
+    featured_dish_2_image: row.featured_dish_2_image || "",
+    featured_dish_3_image: row.featured_dish_3_image || "",
+    featured_dish_4_image: row.featured_dish_4_image || "",
     full_house_image: row.full_house_image || "",
   }
 }
 
-const db = () => createServerClient()
-
 export async function getSettings() {
-  const client = db()
-  const { data, error } = await client.from("settings").select("*").single()
-  if (error && (error.message || "").includes("not found")) {
-    await client.from("settings").insert({}).select().single()
-    const { data: retry, error: retryErr } = await client.from("settings").select("*").single()
-    if (retryErr) return { data: null, error: retryErr.message }
-    return { data: mapRow(retry || {}), error: null }
-  }
-  if (error) return { data: null, error: error.message }
-  if (!data) {
-    const { data: inserted } = await client.from("settings").insert({}).select().single()
-    return { data: mapRow(inserted || {}), error: null }
-  }
-  return { data: mapRow(data), error: null }
+  const db = createServerClient()
+  const { data } = await db.from("settings").select("*").maybeSingle()
+  if (data) return { data: mapRow(data), error: null }
+
+  const { data: inserted } = await db.from("settings").insert({}).select().maybeSingle()
+  if (inserted) return { data: mapRow(inserted), error: null }
+
+  const { data: r2 } = await db.from("settings").select("*").maybeSingle()
+  if (r2) return { data: mapRow(r2), error: null }
+  return { data: mapRow({} as any), error: null }
 }
 
 export async function updateSettings(settings: Partial<SettingsData>) {
-  const client = db()
-  const { data: existing } = await client.from("settings").select("id").single()
+  const db = createServerClient()
+  const { data: existing } = await db.from("settings").select("id").maybeSingle()
   let id = existing?.id
 
   if (!id) {
-    const { data: inserted } = await client.from("settings").insert({}).select("id").single()
+    const { data: inserted } = await db.from("settings").insert({}).select("id").single()
     id = inserted?.id
   }
 
-  const { data, error } = await client
+  if (!id) return { data: null, error: "no settings record found or created" }
+
+  const { data, error } = await db
     .from("settings")
     .update({ ...settings, updated_at: new Date().toISOString() })
-    .eq("id", id || "")
+    .eq("id", id)
     .select()
     .single()
 

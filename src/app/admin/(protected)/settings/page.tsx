@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Save, Loader2, Check } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { Tabs, ImageUpload, useToast } from "@/components/admin/ui"
 import { FormField, TextareaField } from "@/components/admin/ui/FormField"
@@ -50,25 +49,26 @@ const defaultSettings: SettingsData = {
   seo_title: "Mazaya Continental Cuisine | Premium Dining in Dubai",
   og_image: "",
   story_image: "",
-  featured_dish_image: "",
-  full_house_image: "",
+  about_image: "",
+  featured_dish_1_image: "",
+  featured_dish_2_image: "",
+  featured_dish_3_image: "",
+  featured_dish_4_image: "",
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<SettingsData | null>(null)
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [settings, setSettings] = useState<SettingsData>(defaultSettings)
+  const [error, setError] = useState("")
   const { toast } = useToast()
   const [saving, setSaving] = useState(false); const [success, setSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState("general")
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
-      const res = await fetch("/admin/api/settings"); if (!res.ok) throw new Error()
+      const res = await fetch(`/admin/api/settings?t=${Date.now()}`); if (!res.ok) throw new Error()
       const data = await res.json()
       setSettings({ ...defaultSettings, ...data })
     } catch { setError("Failed to load settings") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -80,7 +80,10 @@ export default function SettingsPage() {
       const res = await fetch("/admin/api/settings", {
         method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings),
       })
-      if (!res.ok) throw new Error(); setSuccess(true); setTimeout(() => setSuccess(false), 3000)
+      if (!res.ok) throw new Error()
+      const saved = await res.json()
+      setSettings(prev => prev ? { ...prev, ...saved } : prev)
+      setSuccess(true); setTimeout(() => setSuccess(false), 3000)
     } catch { toast("error", "Failed to save settings") }
     finally { setSaving(false) }
   }
@@ -88,7 +91,6 @@ export default function SettingsPage() {
   const update = (key: keyof SettingsData, value: any) => setSettings(prev => prev ? { ...prev, [key]: value } : prev)
 
   if (error) return <ErrorState message={error} onRetry={fetchData} />
-  if (loading || !settings) return <LoadingSkeleton className="h-96" />
 
   return (
     <>
@@ -108,7 +110,6 @@ export default function SettingsPage() {
               <FormField label="Tagline (AR)" value={settings.tagline_ar ?? ""} onChange={v => update("tagline_ar", v)} dir="rtl" />
             </div>
             <FormField label="Currency" value={settings.currency ?? "AED"} onChange={v => update("currency", v)} />
-            <ImageUpload currentUrl={settings.logo} onUpload={url => update("logo", url)} onRemove={() => update("logo", "")} label="Restaurant Logo" bucket="LOGO" />
           </Section>
         )}
 
@@ -116,7 +117,6 @@ export default function SettingsPage() {
           <Section title="Hero Section">
             <FormField label="Hero Title" value={settings.hero_title ?? ""} onChange={v => update("hero_title", v)} placeholder="Continental Dining at Its Finest" />
             <FormField label="Hero Subtitle" value={settings.hero_subtitle ?? ""} onChange={v => update("hero_subtitle", v)} placeholder="Experience the finest Continental cuisine" />
-            <ImageUpload currentUrl={settings.hero_image} onUpload={url => update("hero_image", url)} onRemove={() => update("hero_image", "")} label="Hero Background Image" bucket="HERO" />
           </Section>
         )}
 
@@ -124,10 +124,18 @@ export default function SettingsPage() {
           <Section title="Homepage Content">
             <FormField label="About Title" value={settings.tagline ?? ""} onChange={v => update("tagline", v)} />
             <TextareaField label="About Description" value={settings.description ?? ""} onChange={v => update("description", v)} placeholder="Welcome text for the homepage..." rows={5} />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <ImageUpload currentUrl={settings.story_image} onUpload={url => update("story_image", url)} onRemove={() => update("story_image", "")} label="Story Section Image" bucket="STORY" />
-              <ImageUpload currentUrl={settings.featured_dish_image} onUpload={url => update("featured_dish_image", url)} onRemove={() => update("featured_dish_image", "")} label="Featured Dish Image" bucket="FEATURED" />
-              <ImageUpload currentUrl={settings.full_house_image} onUpload={url => update("full_house_image", url)} onRemove={() => update("full_house_image", "")} label="Full House Image" bucket="FULL_HOUSE" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ImageUpload currentUrl={settings.about_image} onUpload={url => update("about_image", url)} onRemove={() => update("about_image", "")} label="About Section Image" bucket="STORY" />
+              <ImageUpload currentUrl={settings.story_image} onUpload={url => update("story_image", url)} onRemove={() => update("story_image", "")} label="Our Story Image" bucket="STORY" />
+            </div>
+            <div className="border-t border-white/[0.06] pt-5">
+              <h4 className="text-[#F5F0EB] font-semibold text-sm mb-4">Featured Dishes Images</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <ImageUpload currentUrl={settings.featured_dish_1_image} onUpload={url => update("featured_dish_1_image", url)} onRemove={() => update("featured_dish_1_image", "")} label="Dish 1" bucket="FEATURED" />
+                <ImageUpload currentUrl={settings.featured_dish_2_image} onUpload={url => update("featured_dish_2_image", url)} onRemove={() => update("featured_dish_2_image", "")} label="Dish 2" bucket="FEATURED" />
+                <ImageUpload currentUrl={settings.featured_dish_3_image} onUpload={url => update("featured_dish_3_image", url)} onRemove={() => update("featured_dish_3_image", "")} label="Dish 3" bucket="FEATURED" />
+                <ImageUpload currentUrl={settings.featured_dish_4_image} onUpload={url => update("featured_dish_4_image", url)} onRemove={() => update("featured_dish_4_image", "")} label="Dish 4" bucket="FEATURED" />
+              </div>
             </div>
           </Section>
         )}
@@ -171,7 +179,6 @@ export default function SettingsPage() {
           <Section title="SEO Settings">
             <FormField label="Meta Title" value={settings.seo_title ?? ""} onChange={v => update("seo_title", v)} placeholder="Mazaya Continental Cuisine | Premium Dining" />
             <TextareaField label="Meta Description" value={settings.description ?? ""} onChange={v => update("description", v)} placeholder="Brief description for search engines..." rows={3} />
-            <ImageUpload currentUrl={settings.og_image} onUpload={url => update("og_image", url)} onRemove={() => update("og_image", "")} label="Open Graph Image (social sharing)" bucket="GALLERY" />
           </Section>
         )}
 

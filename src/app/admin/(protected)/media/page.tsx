@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { Image, Search, Folder, Trash2, Copy, Check, Upload, Loader2, Edit3 } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { ConfirmDialog, Modal, useToast } from "@/components/admin/ui"
 import { FormField } from "@/components/admin/ui/FormField"
@@ -28,7 +27,7 @@ export default function MediaPage() {
   const { toast } = useToast()
   const [items, setItems] = useState<MediaItem[]>([])
   const [folders, setFolders] = useState<MediaFolder[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [search, setSearch] = useState(""); const [activeFolder, setActiveFolder] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null); const [deleting, setDeleting] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -42,7 +41,6 @@ export default function MediaPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
       const [itemsRes, foldersRes] = await Promise.all([
         fetch(`/admin/api/media${activeFolder ? `?folder=${activeFolder}` : ""}`),
@@ -51,7 +49,6 @@ export default function MediaPage() {
       if (!itemsRes.ok || !foldersRes.ok) throw new Error()
       setItems(await itemsRes.json()); setFolders(await foldersRes.json())
     } catch { setError("Failed to load media") }
-    finally { setLoading(false) }
   }, [activeFolder])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -177,7 +174,7 @@ export default function MediaPage() {
         </div>
       </Modal>
 
-      {loading ? <LoadingSkeleton className="h-64" /> : filtered.length === 0 && !uploading ? (
+      {filtered.length === 0 && !uploading ? (
         <div
           onDragOver={e => { e.preventDefault(); setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}

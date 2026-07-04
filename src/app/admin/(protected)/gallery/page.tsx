@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { Plus, Trash2, Loader2, Image, Search, Upload, Edit3, X, Check, Library, Eye, EyeOff } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { Modal, ConfirmDialog, Tabs, ImagePicker, useToast } from "@/components/admin/ui"
 import { FormField, SelectField } from "@/components/admin/ui/FormField"
@@ -19,7 +18,7 @@ const galleryCategories = ["interior", "food", "events", "exterior", "general"]
 export default function GalleryPage() {
   const { toast } = useToast()
   const [items, setItems] = useState<GalleryItem[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [search, setSearch] = useState(""); const [categoryTab, setCategoryTab] = useState("all")
   const [uploading, setUploading] = useState(false); const dragRef = useRef<HTMLDivElement>(null)
   const [dragOver, setDragOver] = useState(false)
@@ -28,10 +27,8 @@ export default function GalleryPage() {
   const [pickerOpen, setPickerOpen] = useState(false); const [pickingForNew, setPickingForNew] = useState(false)
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try { const res = await fetch(`/admin/api/gallery?t=${Date.now()}`); if (!res.ok) throw new Error(); setItems(await res.json()) }
     catch { setError("Failed to load gallery") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -150,7 +147,7 @@ export default function GalleryPage() {
 
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} title="Delete Image" message="Are you sure? This will permanently remove the image." loading={deleting} />
 
-      {loading ? <LoadingSkeleton className="h-64" /> : filtered.length === 0 ? (
+      {filtered.length === 0 ? (
         <EmptyState icon={<Image size={28} />} title="No images" description={search ? "No images match your search" : "Upload your first gallery image"} />
       ) : (
         <>

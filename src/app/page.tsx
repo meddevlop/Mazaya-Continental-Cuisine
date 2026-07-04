@@ -5,6 +5,7 @@ import Hero from "@/components/home/Hero"
 import FeaturedDishes from "@/components/home/FeaturedDishes"
 import { menuCategories } from "@/data/menu"
 import AboutSection from "@/components/home/AboutSection"
+import OurStorySection from "@/components/home/OurStorySection"
 import GalleryPreview from "@/components/home/GalleryPreview"
 import SignUpCTA from "@/components/home/SignUpCTA"
 import ReservationCTA from "@/components/home/ReservationCTA"
@@ -16,15 +17,14 @@ interface DishData {
 }
 
 interface HomeData {
-  heroImage: string
-  logo: string
   name: string
   nameAr: string
   tagline: string
   description: string
-  storyImage: string
-  featuredImage: string
   featuredDishes: DishData[]
+  dishImages: (string | undefined)[]
+  aboutImage: string
+  storyImage: string
   galleryImages: { url: string; alt: string }[]
   instagram: string
   phone: string
@@ -32,15 +32,14 @@ interface HomeData {
 }
 
 const fallback: HomeData = {
-  heroImage: "",
-  logo: "",
   name: "Mazaya Continental Cuisine",
   nameAr: "مزايا كونتيننتال",
   tagline: "Continental Dining Experience in Dubai",
   description: "",
-  storyImage: "",
-  featuredImage: "",
   featuredDishes: [],
+  dishImages: [],
+  aboutImage: "",
+  storyImage: "",
   galleryImages: [],
   instagram: "mazaya.cuisine",
   phone: "",
@@ -48,17 +47,17 @@ const fallback: HomeData = {
 }
 
 export default function HomePage() {
-  const [data, setData] = useState<HomeData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<HomeData>(fallback)
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
+        const ts = Date.now()
         const [settingsRes, menuRes, galleryRes] = await Promise.all([
-          fetch("/api/settings"),
-          fetch("/api/menu"),
-          fetch(`/api/gallery?t=${Date.now()}`),
+          fetch(`/api/settings?t=${ts}`),
+          fetch(`/api/menu?t=${ts}`),
+          fetch(`/api/gallery?t=${ts}`),
         ])
 
         const settings = settingsRes.ok ? await settingsRes.json() : {}
@@ -67,14 +66,10 @@ export default function HomePage() {
 
         if (cancelled) return
         setData({
-          heroImage: settings.hero_image || "",
-          logo: settings.logo || "",
           name: settings.restaurant_name || fallback.name,
           nameAr: settings.restaurant_name_ar || fallback.nameAr,
           tagline: settings.tagline || fallback.tagline,
           description: settings.description || "",
-          storyImage: settings.story_image || "",
-          featuredImage: settings.featured_dish_image || "",
           featuredDishes: (menuItems as any[]).some((item: any) => item.is_featured)
             ? (menuItems as any[])
                 .filter((item: any) => item.is_featured)
@@ -87,10 +82,17 @@ export default function HomePage() {
                 name: i.name,
                 description: i.description || "",
               })),
-          galleryImages: (galleryItems as any[])
+          dishImages: [
+            settings.featured_dish_1_image,
+            settings.featured_dish_2_image,
+            settings.featured_dish_3_image,
+            settings.featured_dish_4_image,
+          ],
+          aboutImage: settings.about_image || "",
+          storyImage: settings.story_image || "",
+          galleryImages: (Array.isArray(galleryItems) ? galleryItems : [])
             .filter((item: any) => item.is_active !== false)
-            .slice(0, 6)
-            .map((item: any) => ({ url: item.url, alt: item.alt || "" })),
+            .map((item: any) => ({ url: item.image_url, alt: item.title || "Gallery" })),
           instagram: settings.instagram?.replace(/https:\/\/instagram\.com\//, "").replace(/^@/, "") || fallback.instagram,
           phone: settings.phone || "",
           rating: settings.rating ?? fallback.rating,
@@ -98,30 +100,25 @@ export default function HomePage() {
       } catch {
         if (!cancelled) setData(fallback)
       }
-      if (!cancelled) setLoading(false)
     }
     load()
     return () => { cancelled = true }
   }, [])
 
-  if (loading) return <LoadingSkeleton className="h-screen" />
-  if (!data) return null
-
   return (
     <>
       <Hero
-        heroImage={data.heroImage}
-        logo={data.logo}
         name={data.name}
         nameAr={data.nameAr}
         tagline={data.tagline}
         rating={data.rating}
       />
-      <FeaturedDishes dishes={data.featuredDishes} featuredImage={data.featuredImage} />
-      <AboutSection image={data.storyImage} description={data.description} />
+      <FeaturedDishes dishes={data.featuredDishes} dishImages={data.dishImages} />
+      <AboutSection image={data.aboutImage} description={data.description} />
+      <OurStorySection image={data.storyImage} />
       <GalleryPreview images={data.galleryImages} />
       <SignUpCTA />
-      <ReservationCTA heroImage={data.heroImage} phone={data.phone} />
+      <ReservationCTA phone={data.phone} />
     </>
   )
 }

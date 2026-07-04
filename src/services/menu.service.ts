@@ -41,7 +41,7 @@ const db = () => createServerClient()
 export async function getMenuItems() {
   const { data, error } = await db()
     .from("menu_items")
-    .select("*, category:categories(name)")
+    .select("*")
     .order("sort_order", { ascending: true })
   if (error) return { data: null, error: error.message }
   return { data: (data || []).map(mapRow), error: null }
@@ -50,7 +50,7 @@ export async function getMenuItems() {
 export async function getMenuItemsByCategory(categoryId: string) {
   const { data, error } = await db()
     .from("menu_items")
-    .select("*, category:categories(name)")
+    .select("*")
     .eq("category_id", categoryId)
     .order("sort_order", { ascending: true })
   if (error) return { data: null, error: error.message }
@@ -60,7 +60,7 @@ export async function getMenuItemsByCategory(categoryId: string) {
 export async function getPopularItems() {
   const { data, error } = await db()
     .from("menu_items")
-    .select("*, category:categories(name)")
+    .select("*")
     .eq("is_popular", true)
     .eq("is_available", true)
     .order("sort_order", { ascending: true })

@@ -6,32 +6,16 @@ import Button from "@/components/ui/Button"
 import RatingBadge from "@/components/ui/RatingBadge"
 
 interface HeroProps {
-  heroImage: string
-  logo: string
   name: string
   nameAr: string
   tagline: string
   rating: number
 }
 
-export default function Hero({ heroImage, logo, name, nameAr, tagline, rating }: HeroProps) {
+export default function Hero({ name, nameAr, tagline, rating }: HeroProps) {
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
-      {heroImage ? (
-        <>
-          <motion.img
-            src={heroImage}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.8, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/30" />
-        </>
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#111111] via-[#1A1A1A] to-[#0D0D0D]" />
-      )}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#111111] via-[#1A1A1A] to-[#0D0D0D]" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10 pointer-events-none" />
 
       <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
@@ -40,18 +24,6 @@ export default function Hero({ heroImage, logo, name, nameAr, tagline, rating }:
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
         >
-          {logo && (
-            <motion.img
-              src={logo}
-              alt={name}
-              className="h-24 md:h-32 mx-auto mb-8 drop-shadow-2xl"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
-            />
-          )}
-
           <motion.p
             className="text-[#C8A45C] text-xs md:text-sm uppercase tracking-[0.35em] mb-5 font-medium"
             initial={{ opacity: 0, y: 20 }}

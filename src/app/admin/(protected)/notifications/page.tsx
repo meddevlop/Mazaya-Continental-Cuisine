@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { Bell, CalendarCheck, MessageSquare, Info, Star, CheckCheck, Loader2, ArrowRight } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { Badge } from "@/components/admin/ui"
 import { useRouter } from "next/navigation"
@@ -29,16 +28,14 @@ const typeColors = {
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [filter, setFilter] = useState<"all" | "unread">("all")
   const [markingAll, setMarkingAll] = useState(false)
   const router = useRouter()
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try { const res = await fetch("/admin/api/notifications"); if (!res.ok) throw new Error(); setNotifications(await res.json()) }
     catch { setError("Failed to load") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -88,7 +85,7 @@ export default function NotificationsPage() {
         ))}
       </div>
 
-      {loading ? <LoadingSkeleton className="h-64" /> : filtered.length === 0 ? (
+      {filtered.length === 0 ? (
         <EmptyState icon={<Bell size={28} />} title="No notifications" description={filter === "unread" ? "All caught up!" : "No notifications yet"} />
       ) : (
         <div className="space-y-2">

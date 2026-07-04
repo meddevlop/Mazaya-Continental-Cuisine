@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { Users, Search, Phone, Mail, Star, Calendar, MessageSquare, ChevronRight } from "lucide-react"
 import PageHeader from "@/components/admin/ui/PageHeader"
 import EmptyState from "@/components/admin/ui/EmptyState"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 import ErrorState from "@/components/admin/ui/ErrorState"
 import { Modal, Pagination, Badge } from "@/components/admin/ui"
 
@@ -17,16 +16,14 @@ interface Customer {
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
-  const [loading, setLoading] = useState(true); const [error, setError] = useState("")
+  const [error, setError] = useState("")
   const [search, setSearch] = useState(""); const [page, setPage] = useState(1); const pageSize = 12
   const [favoriteFilter, setFavoriteFilter] = useState(false)
   const [selected, setSelected] = useState<Customer | null>(null)
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try { const res = await fetch("/admin/api/customers"); if (!res.ok) throw new Error(); setCustomers(await res.json()) }
     catch { setError("Failed to load customers") }
-    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -79,7 +76,7 @@ export default function CustomersPage() {
         )}
       </Modal>
 
-      {loading ? <LoadingSkeleton className="h-64" /> : paginated.length === 0 ? (
+      {paginated.length === 0 ? (
         <EmptyState icon={<Users size={28} />} title="No customers found" description={search ? "No customers match your search" : "No customer data yet"} />
       ) : (
         <>

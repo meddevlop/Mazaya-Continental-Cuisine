@@ -44,50 +44,29 @@ export async function getAnalyticsOverview(): Promise<{ data: AnalyticsOverview 
 
     const popularDishes = (menuItems.data || []).map((item: any) => ({
       name: item.name,
-      count: Math.floor(Math.random() * 100) + 50,
+      count: item.order_index || 0,
     }))
 
     const revenueByMonth = MONTHS.map((month, i) => ({
       month,
-      amount: i <= new Date().getMonth() ? Math.floor(Math.random() * 120000) + 30000 : 0,
+      amount: 0,
     }))
 
     return {
       data: {
         total_reservations: totalReservations,
         total_guests: totalGuestsSum,
-        total_revenue: totalGuestsSum * 250,
-        average_rating: 4.9,
-        monthly_growth: 12.5,
+        total_revenue: 0,
+        average_rating: 0,
+        monthly_growth: 0,
         popular_dishes: popularDishes,
         reservations_by_day: last14,
         revenue_by_month: revenueByMonth,
-        visitors_by_source: [
-          { source: "Instagram", count: 45 },
-          { source: "Google", count: 28 },
-          { source: "Facebook", count: 15 },
-          { source: "Word of Mouth", count: 35 },
-          { source: "Direct", count: 22 },
-        ],
+        visitors_by_source: [],
       },
       error: null,
     }
   } catch (err) {
     return { data: null, error: (err as Error).message }
   }
-}
-
-export async function getPopularDishes() {
-  const overview = await getAnalyticsOverview()
-  return { data: overview.data?.popular_dishes || [], error: overview.error }
-}
-
-export async function getReservationsByDay() {
-  const overview = await getAnalyticsOverview()
-  return { data: overview.data?.reservations_by_day || [], error: overview.error }
-}
-
-export async function getRevenueByMonth() {
-  const overview = await getAnalyticsOverview()
-  return { data: overview.data?.revenue_by_month || [], error: overview.error }
 }
