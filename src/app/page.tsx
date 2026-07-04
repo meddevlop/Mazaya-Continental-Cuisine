@@ -6,7 +6,6 @@ import FeaturedDishes from "@/components/home/FeaturedDishes"
 import { menuCategories } from "@/data/menu"
 import AboutSection from "@/components/home/AboutSection"
 import GalleryPreview from "@/components/home/GalleryPreview"
-import InstagramFeed from "@/components/home/InstagramFeed"
 import SignUpCTA from "@/components/home/SignUpCTA"
 import ReservationCTA from "@/components/home/ReservationCTA"
 import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
@@ -118,7 +117,6 @@ export default function HomePage() {
       <FeaturedDishes dishes={data.featuredDishes} />
       <AboutSection image={data.storyImage} description={data.description} />
       <GalleryPreview images={data.galleryImages} />
-      <InstagramFeed instagram={data.instagram} />
       <SignUpCTA />
       <ReservationCTA heroImage={data.heroImage} phone={data.phone} />
     </>
