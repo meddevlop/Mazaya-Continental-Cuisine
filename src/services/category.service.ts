@@ -8,6 +8,7 @@ export interface CategoryData {
   color: string
   icon: string
   order_index: number
+  sort_order: number
   is_active: boolean
   item_count?: number
 }
@@ -21,8 +22,14 @@ function mapRow(row: any): CategoryData {
     color: row.color || "#C8A45C",
     icon: row.icon || "FolderTree",
     order_index: row.order_index ?? 0,
+    sort_order: row.order_index ?? 0,
     is_active: row.is_active ?? true,
   }
+}
+
+function stripSortOrder(body: Record<string, any>) {
+  const { sort_order, ...rest } = body
+  return { ...rest, order_index: sort_order ?? 0 }
 }
 
 const db = () => createServerClient()
@@ -53,7 +60,7 @@ export async function getActiveCategories() {
 export async function createCategory(category: Record<string, any>) {
   const { data, error } = await db()
     .from("categories")
-    .insert([category])
+    .insert([stripSortOrder(category)])
     .select()
     .single()
   if (error) return { data: null, error: error.message }
@@ -63,7 +70,7 @@ export async function createCategory(category: Record<string, any>) {
 export async function updateCategory(id: string, updates: Record<string, any>) {
   const { data, error } = await db()
     .from("categories")
-    .update(updates)
+    .update(stripSortOrder(updates))
     .eq("id", id)
     .select()
     .single()

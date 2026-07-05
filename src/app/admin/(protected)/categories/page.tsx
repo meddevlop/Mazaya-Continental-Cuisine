@@ -43,7 +43,10 @@ export default function CategoriesPage() {
   const validate = () => {
     const errs: Record<string, string> = {}
     if (!form.name.trim()) errs.name = "Name is required"
+    if (!form.name_ar.trim()) errs.name_ar = "Arabic name is required"
     if (!form.slug.trim()) errs.slug = "Slug is required"
+    if (form.slug.trim() && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(form.slug.trim())) errs.slug = "Slug must be lowercase with hyphens only"
+    if (form.sort_order && (isNaN(parseInt(form.sort_order)) || parseInt(form.sort_order) < 0)) errs.sort_order = "Must be a positive number"
     setValidation(errs)
     return Object.keys(errs).length === 0
   }

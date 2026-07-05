@@ -47,7 +47,9 @@ export default function MenuPage() {
     if (!form.name.trim()) errs.name = "Name is required"
     if (!form.name_ar.trim()) errs.name_ar = "Arabic name is required"
     if (!form.price || parseFloat(form.price) <= 0) errs.price = "Valid price required"
+    else if (isNaN(parseFloat(form.price))) errs.price = "Price must be a number"
     if (!form.category_id) errs.category_id = "Category required"
+    if (form.sort_order && (isNaN(parseInt(form.sort_order)) || parseInt(form.sort_order) < 0)) errs.sort_order = "Must be a positive number"
     setValidation(errs)
     return Object.keys(errs).length === 0
   }
