@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js"
 import { supabase, createServerClient } from "@/lib/supabase"
 
 export interface SettingsData {
@@ -112,14 +111,7 @@ export async function updateSettings(settings: Partial<SettingsData>, accessToke
 
   if (!supabaseUrl) return { data: null, error: "NEXT_PUBLIC_SUPABASE_URL not configured" }
 
-  let db = createServerClient()
-
-  if (accessToken && anonKey) {
-    db = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: `Bearer ${accessToken}` } },
-      auth: { persistSession: false },
-    })
-  }
+  const db = createServerClient()
 
   const { data: existing } = await db.from("settings").select("id").order("created_at", { ascending: true }).maybeSingle()
   let id = existing?.id
@@ -133,36 +125,35 @@ export async function updateSettings(settings: Partial<SettingsData>, accessToke
 
   const body = { ...settings, updated_at: new Date().toISOString() }
 
-  if (serviceKey) {
-    const res = await fetch(`${supabaseUrl}/rest/v1/settings?id=eq.${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": serviceKey,
-        "Authorization": `Bearer ${serviceKey}`,
-        "Prefer": "return=representation",
-      },
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      const text = await res.text()
-      return { data: null, error: `Supabase REST error (${res.status}): ${text || "unknown"}` }
+  async function patch(headers: Record<string, string>): Promise<{ data: SettingsData | null; error: string | null }> {
+    try {
+      const res = await fetch(`${supabaseUrl}/rest/v1/settings?id=eq.${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "Prefer": "return=representation", ...headers },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) return { data: null, error: `HTTP ${res.status}: ${await res.text().catch(() => "unknown")}` }
+      const json = await res.json()
+      const row = Array.isArray(json) ? json[0] : json
+      if (!row) return { data: null, error: "empty response" }
+      return { data: mapRow(row), error: null }
+    } catch (e) {
+      return { data: null, error: `fetch exception: ${e}` }
     }
-    const updated = await res.json()
-    const row = Array.isArray(updated) ? updated[0] : updated
-    if (row) return { data: mapRow(row), error: null }
   }
 
-  if (!accessToken || !anonKey) {
-    const { data, error } = await db
-      .from("settings")
-      .update(body)
-      .eq("id", id)
-      .select()
-      .single()
-    if (error) return { data: null, error: error.message }
-    if (data) return { data: mapRow(data), error: null }
+  if (accessToken && anonKey) {
+    const result = await patch({ apikey: anonKey, Authorization: `Bearer ${accessToken}` })
+    if (!result.error) return result
   }
 
-  return { data: null, error: "no write method succeeded" }
+  if (serviceKey) {
+    const result = await patch({ apikey: serviceKey, Authorization: `Bearer ${serviceKey}` })
+    if (!result.error) return result
+  }
+
+  const { data, error } = await db.from("settings").update(body).eq("id", id).select().single()
+  if (!error && data) return { data: mapRow(data), error: null }
+
+  return { data: null, error: `all write methods failed. accessToken=${!!accessToken} anonKey=${!!anonKey} serviceKey=${!!serviceKey} lastError=${error || "none"}` }
 }
