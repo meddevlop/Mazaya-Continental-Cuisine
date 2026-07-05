@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js"
 import { supabase, createServerClient } from "@/lib/supabase"
 
 export interface SettingsData {
@@ -104,8 +105,22 @@ export async function getSettings() {
   return { data: mapRow({} as any), error: null }
 }
 
-export async function updateSettings(settings: Partial<SettingsData>) {
-  const db = createServerClient()
+export async function updateSettings(settings: Partial<SettingsData>, accessToken?: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl) return { data: null, error: "NEXT_PUBLIC_SUPABASE_URL not configured" }
+
+  let db = createServerClient()
+
+  if (accessToken && anonKey) {
+    db = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: `Bearer ${accessToken}` } },
+      auth: { persistSession: false },
+    })
+  }
+
   const { data: existing } = await db.from("settings").select("id").order("created_at", { ascending: true }).maybeSingle()
   let id = existing?.id
 
@@ -118,40 +133,36 @@ export async function updateSettings(settings: Partial<SettingsData>) {
 
   const body = { ...settings, updated_at: new Date().toISOString() }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (supabaseUrl && serviceKey) {
-    try {
-      const res = await fetch(`${supabaseUrl}/rest/v1/settings?id=eq.${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": serviceKey,
-          "Authorization": `Bearer ${serviceKey}`,
-          "Prefer": "return=representation",
-        },
-        body: JSON.stringify(body),
-      })
-      if (!res.ok) {
-        const text = await res.text()
-        return { data: null, error: `Supabase REST API error (${res.status}): ${text}` }
-      }
-      const updated = await res.json()
-      const row = Array.isArray(updated) ? updated[0] : updated
-      return { data: mapRow(row), error: null }
-    } catch (err) {
-      return { data: null, error: `Supabase REST API exception: ${err}` }
+  if (serviceKey) {
+    const res = await fetch(`${supabaseUrl}/rest/v1/settings?id=eq.${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": serviceKey,
+        "Authorization": `Bearer ${serviceKey}`,
+        "Prefer": "return=representation",
+      },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const text = await res.text()
+      return { data: null, error: `Supabase REST error (${res.status}): ${text || "unknown"}` }
     }
+    const updated = await res.json()
+    const row = Array.isArray(updated) ? updated[0] : updated
+    if (row) return { data: mapRow(row), error: null }
   }
 
-  const { data, error } = await db
-    .from("settings")
-    .update(body)
-    .eq("id", id)
-    .select()
-    .single()
+  if (!accessToken || !anonKey) {
+    const { data, error } = await db
+      .from("settings")
+      .update(body)
+      .eq("id", id)
+      .select()
+      .single()
+    if (error) return { data: null, error: error.message }
+    if (data) return { data: mapRow(data), error: null }
+  }
 
-  if (error) return { data: null, error: error.message }
-  return { data: mapRow(data), error: null }
+  return { data: null, error: "no write method succeeded" }
 }

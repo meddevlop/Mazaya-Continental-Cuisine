@@ -111,6 +111,15 @@ export async function POST(request: Request) {
       maxAge: SESSION_DURATION_MS / 1000,
       path: "/",
     })
+    if (data.session?.access_token) {
+      response.cookies.set("admin_sb_token", data.session.access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 3600,
+        path: "/",
+      })
+    }
     return response
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
