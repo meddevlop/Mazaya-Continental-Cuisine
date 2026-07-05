@@ -109,10 +109,6 @@ export async function updateSettings(settings: Partial<SettingsData>) {
   const { data: existing } = await db.from("settings").select("id").order("created_at", { ascending: true }).maybeSingle()
   let id = existing?.id
 
-  if (id) {
-    await db.from("settings").delete().not("id", "eq", id)
-  }
-
   if (!id) {
     const { data: inserted } = await db.from("settings").insert({}).select("id").single()
     id = inserted?.id
@@ -120,9 +116,38 @@ export async function updateSettings(settings: Partial<SettingsData>) {
 
   if (!id) return { data: null, error: "no settings record found or created" }
 
+  const body = { ...settings, updated_at: new Date().toISOString() }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (supabaseUrl && serviceKey) {
+    try {
+      const res = await fetch(`${supabaseUrl}/rest/v1/settings?id=eq.${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": serviceKey,
+          "Authorization": `Bearer ${serviceKey}`,
+          "Prefer": "return=representation",
+        },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        return { data: null, error: `Supabase REST API error (${res.status}): ${text}` }
+      }
+      const updated = await res.json()
+      const row = Array.isArray(updated) ? updated[0] : updated
+      return { data: mapRow(row), error: null }
+    } catch (err) {
+      return { data: null, error: `Supabase REST API exception: ${err}` }
+    }
+  }
+
   const { data, error } = await db
     .from("settings")
-    .update({ ...settings, updated_at: new Date().toISOString() })
+    .update(body)
     .eq("id", id)
     .select()
     .single()
