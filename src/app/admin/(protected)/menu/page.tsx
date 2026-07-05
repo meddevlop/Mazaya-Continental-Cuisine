@@ -63,9 +63,12 @@ export default function MenuPage() {
       const res = await fetch(`/admin/api/menu${editingId ? `/${editingId}` : ""}`, {
         method: editingId ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errBody = await res.text()
+        throw new Error(errBody || res.statusText)
+      }
       setShowForm(false); setEditingId(null); setForm(emptyForm); setValidation({}); fetchData()
-    } catch { toast("error", "Failed to save menu item") }
+    } catch (e: any) { toast("error", `Failed to save menu item: ${e.message}`) }
     finally { setSaving(false) }
   }
 

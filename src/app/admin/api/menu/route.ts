@@ -18,8 +18,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
-  const { data, error } = await createMenuItem(body)
-  if (error) return NextResponse.json({ error }, { status: 500 })
-  return NextResponse.json(data, { status: 201 })
+  try {
+    const body = await request.json()
+    const { data, error } = await createMenuItem(body)
+    if (error) return NextResponse.json({ error }, { status: 500 })
+    return NextResponse.json(data, { status: 201 })
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 })
+  }
 }
