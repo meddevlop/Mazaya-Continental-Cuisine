@@ -6,10 +6,8 @@ import FeaturedDishes from "@/components/home/FeaturedDishes"
 import { menuCategories } from "@/data/menu"
 import AboutSection from "@/components/home/AboutSection"
 import OurStorySection from "@/components/home/OurStorySection"
-import GalleryPreview from "@/components/home/GalleryPreview"
 import SignUpCTA from "@/components/home/SignUpCTA"
 import ReservationCTA from "@/components/home/ReservationCTA"
-import LoadingSkeleton from "@/components/admin/ui/LoadingSkeleton"
 
 interface DishData {
   name: string
@@ -25,7 +23,7 @@ interface HomeData {
   dishImages: (string | undefined)[]
   aboutImage: string
   storyImage: string
-  galleryImages: { url: string; alt: string }[]
+  heroImage: string
   instagram: string
   phone: string
   rating: number
@@ -40,7 +38,7 @@ const fallback: HomeData = {
   dishImages: [],
   aboutImage: "",
   storyImage: "",
-  galleryImages: [],
+  heroImage: "",
   instagram: "mazaya.cuisine",
   phone: "",
   rating: 4.9,
@@ -54,15 +52,13 @@ export default function HomePage() {
     async function load() {
       try {
         const ts = Date.now()
-        const [settingsRes, menuRes, galleryRes] = await Promise.all([
+        const [settingsRes, menuRes] = await Promise.all([
           fetch(`/api/settings?t=${ts}`),
           fetch(`/api/menu?t=${ts}`),
-          fetch(`/api/gallery?t=${ts}`),
         ])
 
         const settings = settingsRes.ok ? await settingsRes.json() : {}
         const menuItems = menuRes.ok ? await menuRes.json() : []
-        const galleryItems = galleryRes.ok ? await galleryRes.json() : []
 
         if (cancelled) return
         setData({
@@ -90,9 +86,7 @@ export default function HomePage() {
           ],
           aboutImage: settings.about_image || "",
           storyImage: settings.story_image || "",
-          galleryImages: (Array.isArray(galleryItems) ? galleryItems : [])
-            .filter((item: any) => item.is_active !== false)
-            .map((item: any) => ({ url: item.image_url, alt: item.title || "Gallery" })),
+          heroImage: settings.hero_image || "",
           instagram: settings.instagram?.replace(/https:\/\/instagram\.com\//, "").replace(/^@/, "") || fallback.instagram,
           phone: settings.phone || "",
           rating: settings.rating ?? fallback.rating,
@@ -112,11 +106,11 @@ export default function HomePage() {
         nameAr={data.nameAr}
         tagline={data.tagline}
         rating={data.rating}
+        heroImage={data.heroImage}
       />
       <FeaturedDishes dishes={data.featuredDishes} dishImages={data.dishImages} />
       <AboutSection image={data.aboutImage} description={data.description} />
       <OurStorySection image={data.storyImage} />
-      <GalleryPreview images={data.galleryImages} />
       <SignUpCTA />
       <ReservationCTA phone={data.phone} />
     </>

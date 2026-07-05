@@ -120,6 +120,7 @@ export default function SettingsPage() {
           <Section title="Hero Section">
             <FormField label="Hero Title" value={settings.hero_title ?? ""} onChange={v => update("hero_title", v)} placeholder="Continental Dining at Its Finest" />
             <FormField label="Hero Subtitle" value={settings.hero_subtitle ?? ""} onChange={v => update("hero_subtitle", v)} placeholder="Experience the finest Continental cuisine" />
+            <ImageUpload currentUrl={settings.hero_image} onUpload={url => update("hero_image", url)} onRemove={() => update("hero_image", "")} label="Hero Background Image" bucket="HERO" />
           </Section>
         )}
 

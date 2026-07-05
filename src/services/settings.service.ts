@@ -93,15 +93,9 @@ function mapRow(row: any): SettingsData {
 
 export async function getSettings() {
   const db = createServerClient()
-  const { data } = await db.from("settings").select("*").order("created_at", { ascending: true }).maybeSingle()
-  if (data) return { data: mapRow(data), error: null }
-
-  const { data: inserted } = await db.from("settings").insert({}).select().maybeSingle()
-  if (inserted) return { data: mapRow(inserted), error: null }
-
-  const { data: r2 } = await db.from("settings").select("*").order("created_at", { ascending: true }).maybeSingle()
-  if (r2) return { data: mapRow(r2), error: null }
-  return { data: mapRow({} as any), error: null }
+  const { data, error } = await db.from("settings").select("*").limit(1).maybeSingle()
+  if (error) console.error("getSettings query error:", error)
+  return { data: mapRow(data || {}), error: null }
 }
 
 export async function updateSettings(settings: Partial<SettingsData>, accessToken?: string) {
@@ -113,7 +107,8 @@ export async function updateSettings(settings: Partial<SettingsData>, accessToke
 
   const db = createServerClient()
 
-  const { data: existing } = await db.from("settings").select("id").order("created_at", { ascending: true }).maybeSingle()
+  const { data: existing, error: queryErr } = await db.from("settings").select("id").limit(1).maybeSingle()
+  if (queryErr) console.error("updateSettings find error:", queryErr)
   let id = existing?.id
 
   if (!id) {

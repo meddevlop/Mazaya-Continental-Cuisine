@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { getServerClient } from "@/lib/supabase"
 
 export interface MessageData {
   id: string
@@ -35,7 +35,8 @@ export async function createMessage(data: {
   subject?: string
   message: string
 }) {
-  const { data: result, error } = await supabase
+  const db = getServerClient()
+  const { data: result, error } = await db
     .from("messages")
     .insert([{ ...data, is_read: false, is_archived: false, source: "website" }])
     .select()
@@ -45,7 +46,8 @@ export async function createMessage(data: {
 }
 
 export async function getMessages() {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("messages")
     .select("*")
     .order("created_at", { ascending: false })
@@ -54,7 +56,8 @@ export async function getMessages() {
 }
 
 export async function getUnreadMessages() {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("messages")
     .select("*")
     .eq("is_read", false)
@@ -64,7 +67,8 @@ export async function getUnreadMessages() {
 }
 
 export async function markMessageAsRead(id: string) {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("messages")
     .update({ is_read: true })
     .eq("id", id)
@@ -75,7 +79,8 @@ export async function markMessageAsRead(id: string) {
 }
 
 export async function markMessageAsUnread(id: string) {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("messages")
     .update({ is_read: false })
     .eq("id", id)
@@ -86,9 +91,10 @@ export async function markMessageAsUnread(id: string) {
 }
 
 export async function toggleMessageArchived(id: string) {
-  const { data: current } = await supabase.from("messages").select("is_archived").eq("id", id).single()
+  const db = getServerClient()
+  const { data: current } = await db.from("messages").select("is_archived").eq("id", id).single()
   const newArchived = current ? !current.is_archived : true
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("messages")
     .update({ is_archived: newArchived })
     .eq("id", id)
@@ -99,7 +105,8 @@ export async function toggleMessageArchived(id: string) {
 }
 
 export async function deleteMessage(id: string) {
-  const { error } = await supabase.from("messages").delete().eq("id", id)
+  const db = getServerClient()
+  const { error } = await db.from("messages").delete().eq("id", id)
   if (error) return { error: error.message }
   return { error: null }
 }

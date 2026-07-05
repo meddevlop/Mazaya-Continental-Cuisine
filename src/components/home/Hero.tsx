@@ -10,12 +10,20 @@ interface HeroProps {
   nameAr: string
   tagline: string
   rating: number
+  heroImage?: string
 }
 
-export default function Hero({ name, nameAr, tagline, rating }: HeroProps) {
+export default function Hero({ name, nameAr, tagline, rating, heroImage }: HeroProps) {
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#111111] via-[#1A1A1A] to-[#0D0D0D]" />
+      {heroImage ? (
+        <div className="absolute inset-0">
+          <img src={heroImage} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#111111] via-[#1A1A1A] to-[#0D0D0D]" />
+      )}
       <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10 pointer-events-none" />
 
       <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">

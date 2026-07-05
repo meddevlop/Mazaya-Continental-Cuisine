@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { getServerClient } from "@/lib/supabase"
 
 export type ReservationStatus = "pending" | "confirmed" | "cancelled" | "completed"
 
@@ -42,7 +42,8 @@ export async function createReservation(data: {
   special_requests?: string
   source?: string
 }) {
-  const { data: result, error } = await supabase
+  const db = getServerClient()
+  const { data: result, error } = await db
     .from("reservations")
     .insert([{ ...data, status: "pending", source: data.source || "website" }])
     .select()
@@ -52,7 +53,8 @@ export async function createReservation(data: {
 }
 
 export async function getReservations() {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("reservations")
     .select("*")
     .order("date", { ascending: false })
@@ -61,7 +63,8 @@ export async function getReservations() {
 }
 
 export async function getReservationsByDate(date: string) {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("reservations")
     .select("*")
     .eq("date", date)
@@ -71,7 +74,8 @@ export async function getReservationsByDate(date: string) {
 }
 
 export async function getReservationsByStatus(status: ReservationStatus) {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("reservations")
     .select("*")
     .eq("status", status)
@@ -81,7 +85,8 @@ export async function getReservationsByStatus(status: ReservationStatus) {
 }
 
 export async function updateReservationStatus(id: string, status: ReservationStatus) {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("reservations")
     .update({ status, updated_at: new Date().toISOString() })
     .eq("id", id)
@@ -92,14 +97,16 @@ export async function updateReservationStatus(id: string, status: ReservationSta
 }
 
 export async function deleteReservation(id: string) {
-  const { error } = await supabase.from("reservations").delete().eq("id", id)
+  const db = getServerClient()
+  const { error } = await db.from("reservations").delete().eq("id", id)
   if (error) return { error: error.message }
   return { error: null }
 }
 
 export async function getTodaysReservations() {
+  const db = getServerClient()
   const today = new Date().toISOString().split("T")[0]
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("reservations")
     .select("*")
     .eq("date", today)
@@ -109,7 +116,8 @@ export async function getTodaysReservations() {
 }
 
 export async function getPendingReservations() {
-  const { data, error } = await supabase
+  const db = getServerClient()
+  const { data, error } = await db
     .from("reservations")
     .select("*")
     .eq("status", "pending")

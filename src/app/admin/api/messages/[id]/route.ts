@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { markMessageAsRead, markMessageAsUnread, deleteMessage } from "@/services/messages.service"
+import { markMessageAsRead, markMessageAsUnread, toggleMessageArchived, deleteMessage } from "@/services/messages.service"
 
 function handleError(error: string) {
   if (error.includes("No rows")) return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -18,6 +18,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   if (body.is_read === false) {
     const { data, error } = await markMessageAsUnread(id)
+    if (error) return handleError(error)
+    return NextResponse.json(data)
+  }
+
+  if (body.is_archived !== undefined) {
+    const { data, error } = await toggleMessageArchived(id)
     if (error) return handleError(error)
     return NextResponse.json(data)
   }
