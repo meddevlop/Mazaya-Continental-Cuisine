@@ -123,37 +123,12 @@ export async function updateSettings(settings: Partial<SettingsData>, accessToke
 
   if (!id) return { data: null, error: "no settings record found or created" }
 
-  const body = { ...settings, updated_at: new Date().toISOString() }
+  const { id: _unused, ...updateBody } = { ...settings, updated_at: new Date().toISOString() } as any
 
-  async function patch(headers: Record<string, string>): Promise<{ data: SettingsData | null; error: string | null }> {
-    try {
-      const res = await fetch(`${supabaseUrl}/rest/v1/settings?id=eq.${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", "Prefer": "return=representation", ...headers },
-        body: JSON.stringify(body),
-      })
-      if (!res.ok) return { data: null, error: `HTTP ${res.status}: ${await res.text().catch(() => "unknown")}` }
-      const json = await res.json()
-      const row = Array.isArray(json) ? json[0] : json
-      if (!row) return { data: null, error: "empty response" }
-      return { data: mapRow(row), error: null }
-    } catch (e) {
-      return { data: null, error: `fetch exception: ${e}` }
-    }
-  }
+  const { error } = await db.from("settings").update(updateBody).eq("id", id)
+  if (error) return { data: null, error: error.message }
 
-  if (accessToken && anonKey) {
-    const result = await patch({ apikey: anonKey, Authorization: `Bearer ${accessToken}` })
-    if (!result.error) return result
-  }
-
-  if (serviceKey) {
-    const result = await patch({ apikey: serviceKey, Authorization: `Bearer ${serviceKey}` })
-    if (!result.error) return result
-  }
-
-  const { data, error } = await db.from("settings").update(body).eq("id", id).select().single()
-  if (!error && data) return { data: mapRow(data), error: null }
-
-  return { data: null, error: `all write methods failed. accessToken=${!!accessToken} anonKey=${!!anonKey} serviceKey=${!!serviceKey} lastError=${error || "none"}` }
+  const { data: refreshed } = await db.from("settings").select("*").eq("id", id).single()
+  if (!refreshed) return { data: null, error: "settings not found after update" }
+  return { data: mapRow(refreshed), error: null }
 }

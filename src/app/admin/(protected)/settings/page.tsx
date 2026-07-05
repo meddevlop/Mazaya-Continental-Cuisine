@@ -80,11 +80,14 @@ export default function SettingsPage() {
       const res = await fetch("/admin/api/settings", {
         method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({ error: res.statusText }))
+        throw new Error(errBody.error || errBody.detail || `HTTP ${res.status}`)
+      }
       const saved = await res.json()
       setSettings(prev => prev ? { ...prev, ...saved } : prev)
       setSuccess(true); setTimeout(() => setSuccess(false), 3000)
-    } catch { toast("error", "Failed to save settings") }
+    } catch (e) { toast("error", `Failed to save settings: ${e instanceof Error ? e.message : e}`) }
     finally { setSaving(false) }
   }
 
